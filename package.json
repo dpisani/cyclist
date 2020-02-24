@@ -1,0 +1,28 @@
+{
+  "name": "cyclist",
+  "version": "0.0.0",
+  "description": "Build lifecycles for JS projects",
+  "main": "index.js",
+  "repository": "git@github.com:dpisani/cyclist.git",
+  "author": "dpisani <dean.a.pisani@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "clean": "tsc --build --clean && yarn workspaces run clean",
+    "build": "tsc --build",
+    "start:runner": "yarn workspace @cyclist/runner start",
+    "test-build": "tsc --build tsconfig-test.json",
+    "test": "mocha",
+    "validate": "manypkg check"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "@changesets/cli": "^2.5.1",
+    "@manypkg/cli": "^0.10.0",
+    "@types/mocha": "^7.0.1",
+    "mocha": "^7.0.1",
+    "typescript": "^3.8.2"
+  }
+}

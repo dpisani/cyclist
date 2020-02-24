@@ -1,0 +1,22 @@
+{
+  "name": "basic-project",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "one": "echo one >> command-log.txt",
+    "two": "echo two >> command-log.txt",
+    "three": "echo three >> command-log.txt"
+  },
+  "cyclist": {
+    "lifecycles": {
+      "main": {
+        "stages": [
+          "one",
+          "two",
+          "three"
+        ]
+      }
+    }
+  }
+}
