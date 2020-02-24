@@ -1,5 +1,11 @@
 # @cyclist/runner
 
+## 0.2.0
+
+### Minor Changes
+
+- 605e5b7: Running cyclist without a given stage will now run all stages in the lifecycle
+
 ## 0.1.1
 
 ### Minor Changes
