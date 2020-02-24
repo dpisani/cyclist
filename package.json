@@ -18,6 +18,30 @@
   "workspaces": [
     "packages/*"
   ],
+  "cyclist": {
+    "lifecycles": {
+      "package": {
+        "stages": [
+          "clean",
+          "validate",
+          "build"
+        ]
+      },
+      "test": {
+        "stages": [
+          "validate",
+          "test-build",
+          "test"
+        ]
+      },
+      "dev": {
+        "stages": [
+          "build",
+          "start:runner"
+        ]
+      }
+    }
+  },
   "dependencies": {
     "@changesets/cli": "^2.5.1",
     "@manypkg/cli": "^0.10.0",
