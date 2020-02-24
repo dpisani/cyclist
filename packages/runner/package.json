@@ -1,11 +1,11 @@
 {
   "name": "@cyclist/runner",
-  "version": "0.0.0",
+  "version": "0.1.1",
   "description": "Orchestrator for package build lifecycles",
   "author": "dpisani <dean.a.pisani@gmail.com>",
   "license": "MIT",
   "bin": {
-    "cyclist": "build/src/bin.js"
+    "cyclist": "./build/src/bin.js"
   },
   "files": [
     "build/**/*.js",
