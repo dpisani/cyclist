@@ -13,7 +13,8 @@
     "start:runner": "yarn workspace @cyclist/runner start",
     "test-build": "tsc --build tsconfig-test.json",
     "test": "mocha",
-    "validate": "manypkg check"
+    "validate": "manypkg check",
+    "version": "changeset version"
   },
   "workspaces": [
     "packages/*"
@@ -24,7 +25,8 @@
         "stages": [
           "clean",
           "validate",
-          "build"
+          "build",
+          "version"
         ]
       },
       "test": {

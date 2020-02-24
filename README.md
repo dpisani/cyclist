@@ -39,12 +39,10 @@ We can configure this lifecycle by defining it in our `package.json`:
 Then, in the terminal we can run
 
 ```bash
-cyclist package publish
+cyclist package
 ```
 
-which will run the corresponding `scripts` in our `package.json` for all the stages in the `package` lifecycle up to and including
-the `publish` stage. We can also execute a lifecycle part-way by providing the name of a different stage, which will only run stages
-up to and including the one specified, e.g.
+which will run all the corresponding `scripts` in our `package.json` for all the stages in the `package` lifecycle. We can also execute a lifecycle part-way by providing the name of a different stage, which will only run stages up to and including the one specified, e.g.
 
 ```bash
 cyclist package build

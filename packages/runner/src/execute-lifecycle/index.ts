@@ -8,10 +8,10 @@ export default async ({
   cwd
 }: {
   lifecycle: Lifecycle;
-  stageName: string;
+  stageName?: string;
   cwd: string;
 }): Promise<void> => {
-  if (!lifecycle.stages.includes(stageName)) {
+  if (stageName && !lifecycle.stages.includes(stageName)) {
     throw new Error(`${stageName}: lifecycle stage not found`);
   }
 

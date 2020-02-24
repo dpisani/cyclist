@@ -26,7 +26,7 @@ describe('Lifecycle script executor', () => {
 
     const fixturePath = await copyFixtureToTemp('basic-project');
 
-    await executeLifecycle({ lifecycle, cwd: fixturePath, stageName: 'three' });
+    await executeLifecycle({ lifecycle, cwd: fixturePath });
 
     // output of lifecycle is in command-log.txt
     const output = await fs.readFile(

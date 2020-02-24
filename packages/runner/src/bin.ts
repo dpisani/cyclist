@@ -8,7 +8,7 @@ import executeLifecycle from './execute-lifecycle';
 
 yargs
   .command(
-    '$0 <lifecycle> <stage>',
+    '$0 <lifecycle> [stage]',
     'Execute a lifecycle up to a given stage',
     () => {},
     async argv => {
@@ -29,7 +29,7 @@ yargs
 
       executeLifecycle({
         lifecycle,
-        stageName: stage as string,
+        stageName: stage as string | undefined,
         cwd
       });
     }

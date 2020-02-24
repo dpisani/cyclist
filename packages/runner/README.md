@@ -46,7 +46,8 @@ An array of stage names. each of these should have a corresponding entry in the 
 Running a lifecycle is done in the terminal:
 
 ```bash
-cyclist <lifecycle name> <stage name>
+cyclist <lifecycle name> [stage name]
 ```
 
-Cyclist will then run stages in the given lifecycle up to and including the one provided.
+Cyclist will run stages in the given lifecycle in sequence, in a manner similar to `npm run`. The stage name argument
+is optional and will cause Cyclist to only run stages up to and including the one provided.
