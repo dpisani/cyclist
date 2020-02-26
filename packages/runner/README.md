@@ -38,8 +38,11 @@ Each lifecycle contains the following:
 
 ### `stages`
 
-An array of stage names. each of these should have a corresponding entry in the `scripts` field in your
-`package.json`
+An array of stages. A stage can either be a string name or an object with the following properties:
+
+- `name` The name of the stage that can be referenced using the CLI
+- `tasks` _(optional)_ An array of strings with all the scripts to run in this stage. Defaults to `[<name>]`
+- `parallel` _(optional)_ Whether all the tasks in this stage should be run in parallel to each other. Defaults to `false`
 
 # Usage
 
