@@ -1,5 +1,11 @@
 # @cyclist/runner
 
+## 0.3.0
+
+### Minor Changes
+
+- bb42878: Added support for specifying lifecycle stages that run multiple tasks in parallel
+
 ## 0.2.0
 
 ### Minor Changes
