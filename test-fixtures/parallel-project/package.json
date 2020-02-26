@@ -1,0 +1,38 @@
+{
+  "name": "parallel-project",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "fast": "echo fast",
+    "medium": "sleep 0.1 && echo medium",
+    "slow": "sleep 0.5 && echo slow",
+    "fast-beeps": "sleep 0.1; echo beep; sleep 0.1; echo beep;",
+    "slow-boops": "echo boop; sleep 0.3; echo boop;"
+  },
+  "cyclist": {
+    "lifecycles": {
+      "main": {
+        "stages": [
+          {
+            "name": "reverse",
+            "tasks": [
+              "slow",
+              "medium",
+              "fast"
+            ],
+            "parallel": true
+          },
+          {
+            "name": "beeps",
+            "tasks": [
+              "slow-boops",
+              "fast-beeps"
+            ],
+            "parallel": true
+          }
+        ]
+      }
+    }
+  }
+}

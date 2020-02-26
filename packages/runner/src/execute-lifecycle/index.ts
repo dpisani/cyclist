@@ -1,29 +1,40 @@
 import * as runScript from '@npmcli/run-script';
 import { Lifecycle } from '../types';
 
-// Runs stages up to and including `stageName`
-export default async ({
-  lifecycle,
-  stageName,
-  cwd
-}: {
-  lifecycle: Lifecycle;
-  stageName?: string;
-  cwd: string;
-}): Promise<void> => {
-  if (stageName && !lifecycle.stages.includes(stageName)) {
-    throw new Error(`${stageName}: lifecycle stage not found`);
+import executeStageDep from './execute-stage';
+import executeStage from './execute-stage';
+
+// Runs stages up to and including `lastStageName`
+export const executeLifecycle = async (
+  {
+    lifecycle,
+    lastStageName,
+    cwd
+  }: {
+    lifecycle: Lifecycle;
+    lastStageName?: string;
+    cwd: string;
+  },
+  { executeStage }: { executeStage: typeof executeStageDep }
+): Promise<void> => {
+  if (
+    lastStageName &&
+    !lifecycle.stages.some(stage => stage.name === lastStageName)
+  ) {
+    throw new Error(`${lastStageName}: lifecycle stage not found`);
   }
 
   for (let stage of lifecycle.stages) {
-    await runScript({
-      event: stage,
-      path: cwd,
-      stdio: 'inherit'
+    await executeStage(stage, cwd, {
+      stdout: process.stdout,
+      stderr: process.stderr
     });
 
-    if (stage === stageName) {
+    if (stage.name === lastStageName) {
       break;
     }
   }
 };
+
+export default params =>
+  executeLifecycle(params, { executeStage: executeStageDep });

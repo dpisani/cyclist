@@ -29,7 +29,7 @@ yargs
 
       executeLifecycle({
         lifecycle,
-        stageName: stage as string | undefined,
+        lastStageName: stage as string | undefined,
         cwd
       });
     }

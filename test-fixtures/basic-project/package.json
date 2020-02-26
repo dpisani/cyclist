@@ -4,9 +4,12 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "one": "echo one >> command-log.txt",
-    "two": "echo two >> command-log.txt",
-    "three": "echo three >> command-log.txt"
+    "one": "echo one",
+    "two": "echo two",
+    "three": "echo three",
+    "stdout": "echo success!",
+    "stderr": "echo error! 1>&2",
+    "error": "exit 1"
   },
   "cyclist": {
     "lifecycles": {
