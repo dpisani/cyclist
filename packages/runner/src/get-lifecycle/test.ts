@@ -4,9 +4,9 @@ import { Config } from '../types';
 const mockConfig: Config = {
   lifecycles: {
     'my-cycle': {
-      stages: ['stage-1', 'stage-2']
-    }
-  }
+      stages: ['stage-1', 'stage-2'],
+    },
+  },
 };
 
 describe('Get build lifecycle utility', () => {
@@ -15,9 +15,19 @@ describe('Get build lifecycle utility', () => {
 
     lifecycle!.should.deepEqual({
       stages: [
-        { name: 'stage-1', tasks: ['stage-1'], parallel: false },
-        { name: 'stage-2', tasks: ['stage-2'], parallel: false }
-      ]
+        {
+          name: 'stage-1',
+          tasks: ['stage-1'],
+          parallel: false,
+          background: false,
+        },
+        {
+          name: 'stage-2',
+          tasks: ['stage-2'],
+          parallel: false,
+          background: false,
+        },
+      ],
     });
   });
 
@@ -31,15 +41,22 @@ describe('Get build lifecycle utility', () => {
     const configExpandedStage: Config = {
       lifecycles: {
         'my-cycle': {
-          stages: [{ name: 'stage-1' }]
-        }
-      }
+          stages: [{ name: 'stage-1' }],
+        },
+      },
     };
 
     const lifecycle = getLifecycle('my-cycle', configExpandedStage);
 
     lifecycle!.should.deepEqual({
-      stages: [{ name: 'stage-1', tasks: ['stage-1'], parallel: false }]
+      stages: [
+        {
+          name: 'stage-1',
+          tasks: ['stage-1'],
+          parallel: false,
+          background: false,
+        },
+      ],
     });
   });
 
@@ -47,17 +64,45 @@ describe('Get build lifecycle utility', () => {
     const configExpandedStage: Config = {
       lifecycles: {
         'my-cycle': {
-          stages: [{ name: 'stage-1', tasks: ['task-1', 'task-2'] }]
-        }
-      }
+          stages: [{ name: 'stage-1', tasks: ['task-1', 'task-2'] }],
+        },
+      },
     };
 
     const lifecycle = getLifecycle('my-cycle', configExpandedStage);
 
     lifecycle!.should.deepEqual({
       stages: [
-        { name: 'stage-1', tasks: ['task-1', 'task-2'], parallel: false }
-      ]
+        {
+          name: 'stage-1',
+          tasks: ['task-1', 'task-2'],
+          parallel: false,
+          background: false,
+        },
+      ],
+    });
+  });
+
+  it('accepts boolean options', () => {
+    const configExpandedStage: Config = {
+      lifecycles: {
+        'my-cycle': {
+          stages: [{ name: 'stage-1', parallel: true, background: true }],
+        },
+      },
+    };
+
+    const lifecycle = getLifecycle('my-cycle', configExpandedStage);
+
+    lifecycle!.should.deepEqual({
+      stages: [
+        {
+          name: 'stage-1',
+          tasks: ['stage-1'],
+          parallel: true,
+          background: true,
+        },
+      ],
     });
   });
 });

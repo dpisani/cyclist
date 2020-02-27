@@ -30,13 +30,13 @@ yargs
       executeLifecycle({
         lifecycle,
         lastStageName: stage as string | undefined,
-        cwd
+        cwd,
       });
     }
   )
   .option('project', {
     alias: 'p',
     type: 'string',
-    description: 'directory of the project to run the lifecycle'
+    description: 'directory of the project to run the lifecycle',
   })
   .demandCommand().argv;

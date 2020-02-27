@@ -1,0 +1,26 @@
+{
+  "name": "background-project",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "forever": "while true; do echo 'Hit CTRL+C to escape!'; sleep 1; done",
+    "short-time": "echo Howdy!"
+  },
+  "cyclist": {
+    "lifecycles": {
+      "main": {
+        "stages": [
+          {
+            "name": "background",
+            "tasks": [
+              "forever"
+            ],
+            "background": true
+          },
+          "short-time"
+        ]
+      }
+    }
+  }
+}

@@ -9,9 +9,9 @@ const cosmiconfigMock = sinon.stub().returns({ search: configSearchMock });
 const mockConfig: Config = {
   lifecycles: {
     default: {
-      stages: ['stage1', 'stage2']
-    }
-  }
+      stages: ['stage1', 'stage2'],
+    },
+  },
 };
 
 const validateConfigMock = sinon
@@ -28,15 +28,15 @@ describe('Get lifecycle config utility', () => {
 
     const config = await getConfig('/cwd', {
       cosmiconfig: cosmiconfigMock,
-      validateConfig: validateConfigMock
+      validateConfig: validateConfigMock,
     });
 
     expect(config).to.deep.equal({
       lifecycles: {
         default: {
-          stages: ['stage1', 'stage2']
-        }
-      }
+          stages: ['stage1', 'stage2'],
+        },
+      },
     });
   });
 
@@ -46,7 +46,7 @@ describe('Get lifecycle config utility', () => {
     try {
       await getConfig('/cwd', {
         cosmiconfig: cosmiconfigMock,
-        validateConfig: validateConfigMock
+        validateConfig: validateConfigMock,
       });
     } catch (e) {
       expect(e).to.match(/Something happened/);
@@ -61,7 +61,7 @@ describe('Get lifecycle config utility', () => {
 
     await getConfig('/cwd', {
       cosmiconfig: cosmiconfigMock,
-      validateConfig: validateConfigMock
+      validateConfig: validateConfigMock,
     });
 
     expect(validateConfigMock.calledOnceWith(mockConfig)).is.true;
@@ -70,19 +70,19 @@ describe('Get lifecycle config utility', () => {
   it('rejects when the provided config is invalid', async () => {
     const failedValidateConfigMock = () => ({
       isValid: false,
-      messages: ['You did it wrong.']
+      messages: ['You did it wrong.'],
     });
     configSearchMock.resolves({ config: mockConfig, isEmpty: false });
 
     try {
       await getConfig('/cwd', {
         cosmiconfig: cosmiconfigMock,
-        validateConfig: failedValidateConfigMock
+        validateConfig: failedValidateConfigMock,
       });
     } catch (e) {
       expect(e).to.deep.equal({
         isValid: false,
-        messages: ['You did it wrong.']
+        messages: ['You did it wrong.'],
       });
 
       return;

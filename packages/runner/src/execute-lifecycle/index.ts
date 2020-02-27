@@ -9,7 +9,7 @@ export const executeLifecycle = async (
   {
     lifecycle,
     lastStageName,
-    cwd
+    cwd,
   }: {
     lifecycle: Lifecycle;
     lastStageName?: string;
@@ -25,10 +25,18 @@ export const executeLifecycle = async (
   }
 
   for (let stage of lifecycle.stages) {
-    await executeStage(stage, cwd, {
-      stdout: process.stdout,
-      stderr: process.stderr
-    });
+    if (stage.background && stage.name !== lastStageName) {
+      // Don't await the result, and ignore the output
+      executeStage(stage, cwd, {
+        stdout: 'ignore',
+        stderr: 'ignore',
+      });
+    } else {
+      await executeStage(stage, cwd, {
+        stdout: process.stdout,
+        stderr: process.stderr,
+      });
+    }
 
     if (stage.name === lastStageName) {
       break;

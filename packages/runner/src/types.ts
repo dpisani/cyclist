@@ -12,6 +12,7 @@ export interface LifecycleStageConfig {
   name: string;
   tasks?: string[];
   parallel?: boolean;
+  background?: boolean;
 }
 
 export interface Lifecycle {
@@ -22,4 +23,5 @@ export interface LifecycleStage {
   name: string;
   tasks: string[];
   parallel: boolean;
+  background: boolean;
 }

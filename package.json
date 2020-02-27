@@ -13,8 +13,9 @@
     "start:runner": "yarn workspace @cyclist/runner start",
     "test-build": "tsc --build tsconfig-test.json",
     "test": "mocha",
-    "validate": "manypkg check",
-    "version": "changeset version"
+    "validate": "manypkg check && yarn prettier --check",
+    "version": "changeset version",
+    "prettier": "prettier **/*.ts"
   },
   "workspaces": [
     "packages/*"
@@ -35,12 +36,6 @@
           "test-build",
           "test"
         ]
-      },
-      "dev": {
-        "stages": [
-          "build",
-          "start:runner"
-        ]
       }
     }
   },
@@ -50,6 +45,7 @@
     "@types/mocha": "^7.0.1",
     "@types/should-sinon": "^0.0.5",
     "mocha": "^7.0.1",
+    "prettier": "^1.19.1",
     "should": "^13.2.3",
     "typescript": "^3.8.2"
   }

@@ -3,7 +3,7 @@ import {
   Lifecycle,
   LifecycleConfig,
   LifecycleStage,
-  LifecycleStageConfig
+  LifecycleStageConfig,
 } from '../types';
 
 export default (lifecycleName: string, config: Config): Lifecycle | null => {
@@ -18,7 +18,7 @@ const convertToLifecycle = (lifecycleCfg: LifecycleConfig): Lifecycle => {
   const stages = lifecycleCfg.stages.map(s => convertToStage(s));
 
   return {
-    stages
+    stages,
   };
 };
 
@@ -29,7 +29,8 @@ const convertToStage = (
     return {
       name: stageCfg,
       tasks: [stageCfg],
-      parallel: false
+      parallel: false,
+      background: false,
     };
   }
 
@@ -37,7 +38,8 @@ const convertToStage = (
     // defaults
     tasks: [stageCfg.name],
     parallel: false,
+    background: false,
     // apply config over defaults
-    ...stageCfg
+    ...stageCfg,
   };
 };

@@ -7,7 +7,7 @@ export default async (
   cwd: string,
   {
     cosmiconfig,
-    validateConfig
+    validateConfig,
   }: {
     cosmiconfig: typeof cosmiconfigModule;
     validateConfig: (

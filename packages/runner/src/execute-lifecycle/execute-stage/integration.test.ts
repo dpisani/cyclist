@@ -40,21 +40,22 @@ const createMockStdio = async () => {
   return { stdout, stderr };
 };
 
-describe('Execute stage util', () => {
+describe('Lifecycle stage executor integration tests', () => {
   it('runs a package script and pipes data from stdout', async () => {
     const fixturePath = await copyFixtureToTemp('basic-project');
 
     const stage: LifecycleStage = {
       name: 'stdout',
       tasks: ['stdout'],
-      parallel: false
+      parallel: false,
+      background: false,
     };
 
     const { stderr, stdout } = await createMockStdio();
 
     await executeStage(stage, fixturePath, {
       stderr: stderr.stream,
-      stdout: stdout.stream
+      stdout: stdout.stream,
     });
 
     const outData = await stdout.getData();
@@ -70,14 +71,15 @@ describe('Execute stage util', () => {
     const stage: LifecycleStage = {
       name: 'stderr',
       tasks: ['stderr'],
-      parallel: false
+      parallel: false,
+      background: false,
     };
 
     const { stderr, stdout } = await createMockStdio();
 
     await executeStage(stage, fixturePath, {
       stderr: stderr.stream,
-      stdout: stdout.stream
+      stdout: stdout.stream,
     });
 
     const outData = await stdout.getData();
@@ -93,14 +95,15 @@ describe('Execute stage util', () => {
     const stage: LifecycleStage = {
       name: 'error',
       tasks: ['error'],
-      parallel: false
+      parallel: false,
+      background: false,
     };
 
     const { stderr, stdout } = await createMockStdio();
 
     return executeStage(stage, fixturePath, {
       stderr: stderr.stream,
-      stdout: stdout.stream
+      stdout: stdout.stream,
     }).should.be.rejected();
   });
 
@@ -110,14 +113,15 @@ describe('Execute stage util', () => {
     const stage: LifecycleStage = {
       name: 'sequence',
       tasks: ['one', 'two', 'three'],
-      parallel: false
+      parallel: false,
+      background: false,
     };
 
     const { stderr, stdout } = await createMockStdio();
 
     await executeStage(stage, fixturePath, {
       stderr: stderr.stream,
-      stdout: stdout.stream
+      stdout: stdout.stream,
     });
 
     const outData = await stdout.getData();
@@ -132,14 +136,15 @@ describe('Execute stage util', () => {
       const stage: LifecycleStage = {
         name: 'multiple',
         tasks: ['slow', 'medium', 'fast'],
-        parallel: true
+        parallel: true,
+        background: false,
       };
 
       const { stderr, stdout } = await createMockStdio();
 
       await executeStage(stage, fixturePath, {
         stderr: stderr.stream,
-        stdout: stdout.stream
+        stdout: stdout.stream,
       });
 
       const outData = await stdout.getData();
@@ -153,14 +158,15 @@ describe('Execute stage util', () => {
       const stage: LifecycleStage = {
         name: 'multiple',
         tasks: ['fast-beeps', 'slow-boops'],
-        parallel: true
+        parallel: true,
+        background: false,
       };
 
       const { stderr, stdout } = await createMockStdio();
 
       await executeStage(stage, fixturePath, {
         stderr: stderr.stream,
-        stdout: stdout.stream
+        stdout: stdout.stream,
       });
 
       const outData = await stdout.getData();
