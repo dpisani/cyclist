@@ -1,8 +1,11 @@
-import * as runScript from '@npmcli/run-script';
 import { Lifecycle } from '../types';
-
+import CyclistLogger, { Logger } from '../logger';
 import executeStageDep from './execute-stage';
-import executeStage from './execute-stage';
+
+export interface Dependencies {
+  executeStage: typeof executeStageDep;
+  logger: Logger;
+}
 
 // Runs stages up to and including `lastStageName`
 export const executeLifecycle = async (
@@ -15,7 +18,7 @@ export const executeLifecycle = async (
     lastStageName?: string;
     cwd: string;
   },
-  { executeStage }: { executeStage: typeof executeStageDep }
+  { executeStage, logger }: Dependencies
 ): Promise<void> => {
   if (
     lastStageName &&
@@ -26,15 +29,23 @@ export const executeLifecycle = async (
 
   for (let stage of lifecycle.stages) {
     if (stage.background && stage.name !== lastStageName) {
-      // Don't await the result, and ignore the output
+      logger.info(`Starting stage ${stage.name} in background`);
+      // Don't await the result
       executeStage(stage, cwd, {
-        stdout: 'ignore',
-        stderr: 'ignore',
+        logger,
+        stdio: {
+          stdout: process.stdout,
+          stderr: process.stderr,
+        },
       });
     } else {
+      logger.info(`Starting stage ${stage.name}`);
       await executeStage(stage, cwd, {
-        stdout: process.stdout,
-        stderr: process.stderr,
+        logger,
+        stdio: {
+          stdout: process.stdout,
+          stderr: process.stderr,
+        },
       });
     }
 
@@ -45,4 +56,7 @@ export const executeLifecycle = async (
 };
 
 export default params =>
-  executeLifecycle(params, { executeStage: executeStageDep });
+  executeLifecycle(params, {
+    executeStage: executeStageDep,
+    logger: new CyclistLogger(),
+  });

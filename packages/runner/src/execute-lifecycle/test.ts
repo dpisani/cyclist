@@ -2,12 +2,28 @@ import { stub, resetHistory } from 'sinon';
 
 import { executeLifecycle } from './index';
 import { Lifecycle } from '../types';
+import { createMockLogger } from '../logger/util';
 
 const mockLifecycle: Lifecycle = {
   stages: [
-    { name: 'one', tasks: ['one'], parallel: false, background: false },
-    { name: 'two', tasks: ['two'], parallel: false, background: false },
-    { name: 'three', tasks: ['three'], parallel: false, background: false },
+    {
+      name: 'one',
+      tasks: [{ script: 'one', outputMode: 'stream' }],
+      parallel: false,
+      background: false,
+    },
+    {
+      name: 'two',
+      tasks: [{ script: 'two', outputMode: 'stream' }],
+      parallel: false,
+      background: false,
+    },
+    {
+      name: 'three',
+      tasks: [{ script: 'three', outputMode: 'stream' }],
+      parallel: false,
+      background: false,
+    },
   ],
 };
 
@@ -15,6 +31,7 @@ const mockExecuteStage = stub().resolves();
 
 const deps = {
   executeStage: mockExecuteStage,
+  logger: createMockLogger(),
 };
 
 describe('Lifecycle execution orchestrator', () => {
@@ -29,15 +46,15 @@ describe('Lifecycle execution orchestrator', () => {
     );
 
     mockExecuteStage.firstCall.args.should.containDeepOrdered([
-      { name: 'one', tasks: ['one'] },
+      { name: 'one', tasks: [{ script: 'one', outputMode: 'stream' }] },
       '/mock/cwd',
     ]);
     mockExecuteStage.secondCall.args.should.containDeepOrdered([
-      { name: 'two', tasks: ['two'] },
+      { name: 'two', tasks: [{ script: 'two', outputMode: 'stream' }] },
       '/mock/cwd',
     ]);
     mockExecuteStage.thirdCall.args.should.containDeepOrdered([
-      { name: 'three', tasks: ['three'] },
+      { name: 'three', tasks: [{ script: 'three', outputMode: 'stream' }] },
       '/mock/cwd',
     ]);
   });
@@ -76,8 +93,18 @@ describe('Lifecycle execution orchestrator', () => {
   describe('background stages', () => {
     const backgroundLifecycle: Lifecycle = {
       stages: [
-        { name: 'one', tasks: ['one'], parallel: false, background: true },
-        { name: 'two', tasks: ['two'], parallel: false, background: false },
+        {
+          name: 'one',
+          tasks: [{ script: 'one', outputMode: 'stream' }],
+          parallel: false,
+          background: true,
+        },
+        {
+          name: 'two',
+          tasks: [{ script: 'two', outputMode: 'stream' }],
+          parallel: false,
+          background: false,
+        },
       ],
     };
 
@@ -91,27 +118,15 @@ describe('Lifecycle execution orchestrator', () => {
 
       await executeLifecycle(
         { lifecycle: backgroundLifecycle, cwd: '/mock/cwd' },
-        { executeStage: mockExecuteStageLongTask }
+        { ...deps, executeStage: mockExecuteStageLongTask }
       );
 
       mockExecuteStageLongTask.firstCall.args.should.containDeepOrdered([
-        { name: 'one', tasks: ['one'] },
+        { name: 'one', tasks: [{ script: 'one', outputMode: 'stream' }] },
       ]);
       mockExecuteStageLongTask.secondCall.args.should.containDeepOrdered([
-        { name: 'two', tasks: ['two'] },
+        { name: 'two', tasks: [{ script: 'two', outputMode: 'stream' }] },
       ]);
-    });
-
-    it('ignores stdio output from background tasks', async () => {
-      await executeLifecycle(
-        { lifecycle: backgroundLifecycle, cwd: '/mock/cwd' },
-        { executeStage: mockExecuteStage }
-      );
-
-      mockExecuteStage.firstCall.args[2].should.deepEqual({
-        stdout: 'ignore',
-        stderr: 'ignore',
-      });
     });
 
     it('treats a background task like a normal one if it is last in the order', async () => {
@@ -132,14 +147,9 @@ describe('Lifecycle execution orchestrator', () => {
           cwd: '/mock/cwd',
           lastStageName: 'one',
         },
-        { executeStage: mockExecuteStageLongTask }
+        { ...deps, executeStage: mockExecuteStageLongTask }
       ).then(() => {
         isLifecyclePending = false;
-      });
-
-      mockExecuteStageLongTask.firstCall.args[2].should.not.deepEqual({
-        stdout: 'ignore',
-        stderr: 'ignore',
       });
 
       // Check that the cycle hasn't moved on

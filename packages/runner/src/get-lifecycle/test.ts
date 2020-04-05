@@ -17,13 +17,13 @@ describe('Get build lifecycle utility', () => {
       stages: [
         {
           name: 'stage-1',
-          tasks: ['stage-1'],
+          tasks: [{ script: 'stage-1', outputMode: 'stream' }],
           parallel: false,
           background: false,
         },
         {
           name: 'stage-2',
-          tasks: ['stage-2'],
+          tasks: [{ script: 'stage-2', outputMode: 'stream' }],
           parallel: false,
           background: false,
         },
@@ -52,7 +52,7 @@ describe('Get build lifecycle utility', () => {
       stages: [
         {
           name: 'stage-1',
-          tasks: ['stage-1'],
+          tasks: [{ script: 'stage-1', outputMode: 'stream' }],
           parallel: false,
           background: false,
         },
@@ -60,7 +60,7 @@ describe('Get build lifecycle utility', () => {
     });
   });
 
-  it('accepts an array of tasks', () => {
+  it('accepts an array of tasks as strings and reformats their shape', () => {
     const configExpandedStage: Config = {
       lifecycles: {
         'my-cycle': {
@@ -75,7 +75,10 @@ describe('Get build lifecycle utility', () => {
       stages: [
         {
           name: 'stage-1',
-          tasks: ['task-1', 'task-2'],
+          tasks: [
+            { script: 'task-1', outputMode: 'stream' },
+            { script: 'task-2', outputMode: 'stream' },
+          ],
           parallel: false,
           background: false,
         },
@@ -83,7 +86,7 @@ describe('Get build lifecycle utility', () => {
     });
   });
 
-  it('accepts boolean options', () => {
+  it('accepts boolean options for stages', () => {
     const configExpandedStage: Config = {
       lifecycles: {
         'my-cycle': {
@@ -94,15 +97,79 @@ describe('Get build lifecycle utility', () => {
 
     const lifecycle = getLifecycle('my-cycle', configExpandedStage);
 
-    lifecycle!.should.deepEqual({
+    lifecycle!.should.containDeep({
       stages: [
         {
-          name: 'stage-1',
-          tasks: ['stage-1'],
           parallel: true,
           background: true,
         },
       ],
     });
+  });
+
+  it('accepts options for tasks', () => {
+    const configExpandedStage: Config = {
+      lifecycles: {
+        'my-cycle': {
+          stages: [
+            {
+              name: 'stage-1',
+              tasks: [
+                { script: 'task-1', outputMode: 'batch' },
+                { script: 'task-2', outputMode: 'ignore' },
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    const lifecycle = getLifecycle('my-cycle', configExpandedStage);
+
+    lifecycle!.should.deepEqual({
+      stages: [
+        {
+          name: 'stage-1',
+          tasks: [
+            { script: 'task-1', outputMode: 'batch' },
+            { script: 'task-2', outputMode: 'ignore' },
+          ],
+          parallel: false,
+          background: false,
+        },
+      ],
+    });
+  });
+
+  it('defaults outputMode for tasks to batch when parallel=true', () => {
+    const configExpandedStage: Config = {
+      lifecycles: {
+        'my-cycle': {
+          stages: [{ name: 'stage-1', parallel: true }],
+        },
+      },
+    };
+
+    const lifecycle = getLifecycle('my-cycle', configExpandedStage);
+
+    lifecycle!.stages[0].tasks.should.deepEqual([
+      { script: 'stage-1', outputMode: 'batch' },
+    ]);
+  });
+
+  it('defaults outputMode for tasks to ignore when background=true', () => {
+    const configExpandedStage: Config = {
+      lifecycles: {
+        'my-cycle': {
+          stages: [{ name: 'stage-1', background: true }],
+        },
+      },
+    };
+
+    const lifecycle = getLifecycle('my-cycle', configExpandedStage);
+
+    lifecycle!.stages[0].tasks.should.deepEqual([
+      { script: 'stage-1', outputMode: 'ignore' },
+    ]);
   });
 });

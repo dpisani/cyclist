@@ -10,9 +10,17 @@ export interface LifecycleConfig {
 
 export interface LifecycleStageConfig {
   name: string;
-  tasks?: string[];
+  tasks?: (string | LifecycleTaskConfig)[];
   parallel?: boolean;
   background?: boolean;
+}
+
+export type OutputMode = 'stream' | 'batch' | 'ignore';
+
+export interface LifecycleTaskConfig {
+  script: string;
+  // Controls how stdio output is displayed for this task
+  outputMode?: OutputMode;
 }
 
 export interface Lifecycle {
@@ -21,7 +29,12 @@ export interface Lifecycle {
 
 export interface LifecycleStage {
   name: string;
-  tasks: string[];
+  tasks: LifecycleTask[];
   parallel: boolean;
   background: boolean;
+}
+
+export interface LifecycleTask {
+  script: string;
+  outputMode: OutputMode;
 }

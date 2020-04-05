@@ -4,7 +4,12 @@ import {
   LifecycleConfig,
   LifecycleStage,
   LifecycleStageConfig,
+  LifecycleTask,
+  LifecycleTaskConfig,
+  OutputMode,
 } from '../types';
+
+// Converts a user supplied config into a complete config with the correct defaults
 
 export default (lifecycleName: string, config: Config): Lifecycle | null => {
   if (config.lifecycles[lifecycleName]) {
@@ -28,18 +33,47 @@ const convertToStage = (
   if (typeof stageCfg === 'string') {
     return {
       name: stageCfg,
-      tasks: [stageCfg],
+      tasks: [convertToTask(stageCfg, 'stream')],
       parallel: false,
       background: false,
     };
   }
 
+  let defaultOutputMode: OutputMode = 'stream';
+  if (stageCfg.parallel) {
+    defaultOutputMode = 'batch';
+  }
+  if (stageCfg.background) {
+    defaultOutputMode = 'ignore';
+  }
+
+  const tasks: LifecycleTask[] = stageCfg.tasks
+    ? stageCfg.tasks.map(t => convertToTask(t, defaultOutputMode))
+    : [convertToTask(stageCfg.name, defaultOutputMode)];
+
   return {
     // defaults
-    tasks: [stageCfg.name],
     parallel: false,
     background: false,
     // apply config over defaults
     ...stageCfg,
+    tasks,
+  };
+};
+
+const convertToTask = (
+  taskCfg: string | LifecycleTaskConfig,
+  defaultOutputMode: OutputMode
+): LifecycleTask => {
+  if (typeof taskCfg === 'string') {
+    return {
+      script: taskCfg,
+      outputMode: defaultOutputMode,
+    };
+  }
+
+  return {
+    outputMode: defaultOutputMode,
+    ...taskCfg,
   };
 };

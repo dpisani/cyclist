@@ -1,5 +1,3 @@
-import { Writable } from 'stream';
-
 import * as findUp from 'find-up';
 import * as path from 'path';
 import * as tmp from 'tmp-promise';
@@ -7,6 +5,7 @@ import * as fs from 'fs-extra';
 
 import executeStage from './index';
 import { LifecycleStage } from '../../types';
+import { createMockLogger } from '../../logger/util';
 
 const copyFixtureToTemp = async (fixtureName: string): Promise<string> => {
   const fixturesDir = await findUp('test-fixtures', { type: 'directory' });
@@ -37,7 +36,10 @@ const createMockStdio = async () => {
   const stdout = await createObservableStream();
   const stderr = await createObservableStream();
 
-  return { stdout, stderr };
+  const stdio = { stderr: stderr.stream, stdout: stdout.stream };
+  const data = { getStderr: stderr.getData, getStdout: stdout.getData };
+
+  return { stdio, data };
 };
 
 describe('Lifecycle stage executor integration tests', () => {
@@ -46,23 +48,23 @@ describe('Lifecycle stage executor integration tests', () => {
 
     const stage: LifecycleStage = {
       name: 'stdout',
-      tasks: ['stdout'],
+      tasks: [{ script: 'stdout', outputMode: 'stream' }],
       parallel: false,
       background: false,
     };
 
-    const { stderr, stdout } = await createMockStdio();
+    const { stdio, data } = await createMockStdio();
 
     await executeStage(stage, fixturePath, {
-      stderr: stderr.stream,
-      stdout: stdout.stream,
+      stdio,
+      logger: createMockLogger(),
     });
 
-    const outData = await stdout.getData();
-    const errData = await stderr.getData();
+    const outData = await data.getStdout();
+    const errData = await data.getStderr();
 
     outData.toString().should.equal('success!\n');
-    errData.should.be.empty;
+    errData.should.be.empty();
   });
 
   it('runs a package script and pipes data from stderr', async () => {
@@ -70,23 +72,23 @@ describe('Lifecycle stage executor integration tests', () => {
 
     const stage: LifecycleStage = {
       name: 'stderr',
-      tasks: ['stderr'],
+      tasks: [{ script: 'stderr', outputMode: 'stream' }],
       parallel: false,
       background: false,
     };
 
-    const { stderr, stdout } = await createMockStdio();
+    const { stdio, data } = await createMockStdio();
 
     await executeStage(stage, fixturePath, {
-      stderr: stderr.stream,
-      stdout: stdout.stream,
+      stdio,
+      logger: createMockLogger(),
     });
 
-    const outData = await stdout.getData();
-    const errData = await stderr.getData();
+    const outData = await data.getStdout();
+    const errData = await data.getStderr();
 
     errData.toString().should.equal('error!\n');
-    outData.should.be.empty;
+    outData.should.be.empty();
   });
 
   it('rejects when the script fails', async () => {
@@ -94,16 +96,16 @@ describe('Lifecycle stage executor integration tests', () => {
 
     const stage: LifecycleStage = {
       name: 'error',
-      tasks: ['error'],
+      tasks: [{ script: 'error', outputMode: 'stream' }],
       parallel: false,
       background: false,
     };
 
-    const { stderr, stdout } = await createMockStdio();
+    const { stdio } = await createMockStdio();
 
     return executeStage(stage, fixturePath, {
-      stderr: stderr.stream,
-      stdout: stdout.stream,
+      stdio,
+      logger: createMockLogger(),
     }).should.be.rejected();
   });
 
@@ -112,21 +114,52 @@ describe('Lifecycle stage executor integration tests', () => {
 
     const stage: LifecycleStage = {
       name: 'sequence',
-      tasks: ['one', 'two', 'three'],
+      tasks: [
+        { script: 'one', outputMode: 'stream' },
+        { script: 'two', outputMode: 'stream' },
+        { script: 'three', outputMode: 'stream' },
+      ],
       parallel: false,
       background: false,
     };
 
-    const { stderr, stdout } = await createMockStdio();
+    const { stdio, data } = await createMockStdio();
 
     await executeStage(stage, fixturePath, {
-      stderr: stderr.stream,
-      stdout: stdout.stream,
+      stdio,
+      logger: createMockLogger(),
     });
 
-    const outData = await stdout.getData();
+    const outData = await data.getStdout();
 
     outData.toString().should.equal('one\ntwo\nthree\n');
+  });
+
+  it('ignores output from stdio when outputMode is ignore', async () => {
+    const fixturePath = await copyFixtureToTemp('basic-project');
+
+    const stage: LifecycleStage = {
+      name: 'stdout',
+      tasks: [
+        { script: 'stdout', outputMode: 'ignore' },
+        { script: 'stderr', outputMode: 'ignore' },
+      ],
+      parallel: false,
+      background: false,
+    };
+
+    const { stdio, data } = await createMockStdio();
+
+    await executeStage(stage, fixturePath, {
+      stdio,
+      logger: createMockLogger(),
+    });
+
+    const outData = await data.getStdout();
+    const errData = await data.getStderr();
+
+    outData.should.be.empty();
+    errData.should.be.empty();
   });
 
   describe('parallel stages', () => {
@@ -135,43 +168,75 @@ describe('Lifecycle stage executor integration tests', () => {
 
       const stage: LifecycleStage = {
         name: 'multiple',
-        tasks: ['slow', 'medium', 'fast'],
+        tasks: [
+          { script: 'slow', outputMode: 'stream' },
+          { script: 'medium', outputMode: 'stream' },
+          { script: 'fast', outputMode: 'stream' },
+        ],
         parallel: true,
         background: false,
       };
 
-      const { stderr, stdout } = await createMockStdio();
+      const { stdio, data } = await createMockStdio();
 
       await executeStage(stage, fixturePath, {
-        stderr: stderr.stream,
-        stdout: stdout.stream,
+        stdio,
+        logger: createMockLogger(),
       });
 
-      const outData = await stdout.getData();
+      const outData = await data.getStdout();
 
       outData.toString().should.equal('fast\nmedium\nslow\n');
     });
 
-    it('batches output of parallel commands together', async () => {
+    it('batches output of parallel commands when outputMode is batch', async () => {
       const fixturePath = await copyFixtureToTemp('parallel-project');
 
       const stage: LifecycleStage = {
         name: 'multiple',
-        tasks: ['fast-beeps', 'slow-boops'],
+        tasks: [
+          { script: 'fast-beeps', outputMode: 'batch' },
+          { script: 'slow-boops', outputMode: 'batch' },
+        ],
         parallel: true,
         background: false,
       };
 
-      const { stderr, stdout } = await createMockStdio();
+      const { stdio, data } = await createMockStdio();
 
       await executeStage(stage, fixturePath, {
-        stderr: stderr.stream,
-        stdout: stdout.stream,
+        stdio,
+        logger: createMockLogger(),
       });
 
-      const outData = await stdout.getData();
+      const outData = await data.getStdout();
 
       outData.toString().should.equal('beep\nbeep\nboop\nboop\n');
+    });
+
+    it('interleaves output of parallel commands when outputMode is stream', async () => {
+      const fixturePath = await copyFixtureToTemp('parallel-project');
+
+      const stage: LifecycleStage = {
+        name: 'multiple',
+        tasks: [
+          { script: 'fast-beeps', outputMode: 'stream' },
+          { script: 'slow-boops', outputMode: 'stream' },
+        ],
+        parallel: true,
+        background: false,
+      };
+
+      const { stdio, data } = await createMockStdio();
+
+      await executeStage(stage, fixturePath, {
+        stdio,
+        logger: createMockLogger(),
+      });
+
+      const outData = await data.getStdout();
+
+      outData.toString().should.equal('boop\nbeep\nbeep\nboop\n');
     });
   });
 });

@@ -8,11 +8,13 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "clean": "tsc --build --clean && yarn workspaces run clean",
+    "clean": "tsc --build --clean",
     "build": "tsc --build",
-    "start:runner": "yarn workspace @cyclist/runner start",
+    "link:runner": "yarn workspace @cyclist/runner build:link",
     "test-build": "tsc --build tsconfig-test.json",
+    "test-build:watch": "tsc --build tsconfig-test.json --watch",
     "test": "mocha",
+    "test:watch": "mocha --watch",
     "validate": "manypkg check && yarn prettier --check",
     "version": "changeset version",
     "prettier": "prettier **/*.ts"
@@ -30,11 +32,30 @@
           "version"
         ]
       },
-      "test": {
+      "verify": {
+        "stages": [
+          "clean",
+          "validate",
+          "test-build",
+          "test"
+        ]
+      },
+      "dev:build": {
+        "stages": [
+          "clean",
+          "build",
+          "link:runner"
+        ]
+      },
+      "dev:test": {
         "stages": [
           "clean",
           "test-build",
-          "test"
+          {
+            "name": "test-build:watch",
+            "background": true
+          },
+          "test:watch"
         ]
       }
     }

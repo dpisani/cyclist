@@ -41,9 +41,19 @@ Each lifecycle contains the following:
 An array of stages. A stage can either be a string name or an object with the following properties:
 
 - `name` The name of the stage that can be referenced using the CLI
-- `tasks` _(optional)_ An array of strings with all the scripts to run in this stage. Defaults to `[<name>]`
+- `tasks` _(optional)_ An array of tasks to run in this stage. Defaults to `[<name>]`
 - `parallel` _(optional)_ Whether all the tasks in this stage should be run in parallel to each other. Defaults to `false`
 - `background` _(optional)_ Whether the tasks in this stage should be run in the background. Subsequent stages in the lifecycle will be allowed to run even if this stage has not yet completed. Defaults to `false`
+
+### `tasks`
+
+An array of tasks to be run for a stage. A task can either be a string corresponding to script to run or an object with the following properties:
+
+- `script` The script to run. This must correspond to the name of a script in the package being worked upon
+- `outputMode` _(optional)_ How stdio output from this task should be handled. Can be one of the following:
+  - `stream` Stream task output directly to the console. _Default_
+  - `batch` Wait for a task to complete before displaying all its output to the console. _Default when the stage is `parallel: true`_
+  - `ignore` Don't display any console output. _Default when the stage is `background: true`_
 
 # Usage
 

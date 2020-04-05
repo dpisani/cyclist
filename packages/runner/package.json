@@ -13,11 +13,13 @@
   ],
   "scripts": {
     "clean": "rm -rf build",
+    "build:link": "chmod +x ./build/src/bin.js && yarn link",
     "start": "node build/src/bin.js"
   },
   "dependencies": {
     "@npmcli/run-script": "^1.2.1",
     "chai": "^4.2.0",
+    "chalk": "^3.0.0",
     "cosmiconfig": "^6.0.0",
     "yargs": "^15.1.0"
   },

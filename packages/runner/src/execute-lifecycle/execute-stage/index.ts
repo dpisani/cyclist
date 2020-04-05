@@ -1,60 +1,87 @@
 import { Writable } from 'stream';
 import * as runScript from '@npmcli/run-script';
+import * as chalk from 'chalk';
 
-import { LifecycleStage } from '../../types';
+import { LifecycleStage, OutputMode, LifecycleTask } from '../../types';
+import { Logger } from '../../logger';
 
 export interface InjectedStdio {
-  stdout: Writable | 'ignore';
-  stderr: Writable | 'ignore';
+  stdout: Writable;
+  stderr: Writable;
+}
+
+export interface Dependencies {
+  stdio: InjectedStdio;
+  logger: Logger;
 }
 
 export default async (
   stage: LifecycleStage,
   cwd: string,
-  stdio: InjectedStdio
+  deps: Dependencies
 ) => {
   if (stage.parallel) {
-    await runParallelTasks(stage.tasks, cwd, stdio);
+    await runParallelTasks(stage.tasks, cwd, deps);
   } else {
-    await runSequentialTasks(stage.tasks, cwd, stdio);
+    await runSequentialTasks(stage.tasks, cwd, deps);
   }
 };
 
 // When running scripts sequentially, pipe directly to stdio
 const runSequentialTasks = async (
-  tasks: string[],
+  tasks: LifecycleTask[],
   cwd: string,
-  { stdout, stderr }: InjectedStdio
+  { stdio, logger }: Dependencies
 ) => {
-  for (let script of tasks) {
-    await runScript({
-      event: script,
-      path: cwd,
-      stdio: ['inherit', stdout, stderr],
-    });
+  for (let task of tasks) {
+    await runTaskScript(task.script, task.outputMode, cwd, { stdio, logger });
+
+    logger.info(`Completed task ${chalk.bold(task)}`);
   }
 };
 
 //When running multiple scripts in parallel, batch output of each
 const runParallelTasks = (
-  tasks: string[],
+  tasks: LifecycleTask[],
   cwd: string,
-  stdio: InjectedStdio
+  { stdio, logger }: Dependencies
 ) => {
-  const executions = tasks.map(async script => {
-    const { stdout, stderr } = await runScript({
-      event: script,
-      path: cwd,
-      stdio: ['inherit', 'pipe', 'pipe'],
-    });
-
-    if (stdio.stdout !== 'ignore') {
-      stdio.stdout.write(stdout);
-    }
-    if (stdio.stderr !== 'ignore') {
-      stdio.stderr.write(stderr);
-    }
+  logger.info(`Starting ${tasks.length} tasks in parallel`);
+  const executions = tasks.map(async task => {
+    await runTaskScript(task.script, task.outputMode, cwd, { stdio, logger });
   });
 
   return Promise.all(executions);
+};
+
+const runTaskScript = async (
+  script: string,
+  outputMode: OutputMode,
+  cwd: string,
+  { stdio, logger }: Dependencies
+) => {
+  let stdioCfg;
+  if (outputMode === 'stream') {
+    stdioCfg = ['inherit', stdio.stdout, stdio.stderr];
+  } else if (outputMode === 'batch') {
+    stdioCfg = ['inherit', 'pipe', 'pipe'];
+  } else {
+    stdioCfg = ['inherit', 'ignore', 'ignore'];
+  }
+
+  const { stdout, stderr } = await runScript({
+    event: script,
+    path: cwd,
+    stdio: stdioCfg,
+  });
+
+  // Flush out any piped output
+  if (stdioCfg[2] === 'pipe') {
+    stdio.stdout.write(stdout);
+  }
+  if (stdioCfg[3] === 'pipe') {
+    stdio.stderr.write(stderr);
+  }
+
+  logger.info(`Completed task ${chalk.bold(script)}`);
 };
