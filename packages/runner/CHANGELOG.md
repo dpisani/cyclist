@@ -1,5 +1,12 @@
 # @cyclist/runner
 
+## 0.5.0
+
+### Minor Changes
+
+- adb3259: Allow changing the output mode for tasks via config.
+- adb3259: Log info about lifecycle execution
+
 ## 0.4.0
 
 ### Minor Changes

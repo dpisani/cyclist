@@ -1,6 +1,6 @@
 {
   "name": "@cyclist/runner",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Orchestrator for package build lifecycles",
   "author": "dpisani <dean.a.pisani@gmail.com>",
   "license": "MIT",
