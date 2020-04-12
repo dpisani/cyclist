@@ -1,3 +1,5 @@
+import * as chalk from 'chalk';
+
 import { Lifecycle } from '../types';
 import CyclistLogger, { Logger } from '../logger';
 import executeStageDep from './execute-stage';
@@ -28,7 +30,7 @@ export const executeLifecycle = async (
   }
 
   for (let stage of lifecycle.stages) {
-    logger.info(`Starting stage ${stage.name}`);
+    logger.info(chalk.bold(stage.name));
     await executeStage(stage, cwd, {
       logger,
       stdio: {

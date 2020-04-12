@@ -1,6 +1,5 @@
 import { Writable } from 'stream';
 import * as runScript from '@npmcli/run-script';
-import * as chalk from 'chalk';
 
 import { LifecycleStage, OutputMode, LifecycleTask } from '../../types';
 import { Logger } from '../../logger';
@@ -80,6 +79,4 @@ const runTaskScript = async (
   if (stdioCfg[3] === 'pipe') {
     stdio.stderr.write(stderr);
   }
-
-  logger.info(`Completed task ${chalk.bold(script)}`);
 };
