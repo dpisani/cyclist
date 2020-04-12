@@ -28,26 +28,14 @@ export const executeLifecycle = async (
   }
 
   for (let stage of lifecycle.stages) {
-    if (stage.background && stage.name !== lastStageName) {
-      logger.info(`Starting stage ${stage.name} in background`);
-      // Don't await the result
-      executeStage(stage, cwd, {
-        logger,
-        stdio: {
-          stdout: process.stdout,
-          stderr: process.stderr,
-        },
-      });
-    } else {
-      logger.info(`Starting stage ${stage.name}`);
-      await executeStage(stage, cwd, {
-        logger,
-        stdio: {
-          stdout: process.stdout,
-          stderr: process.stderr,
-        },
-      });
-    }
+    logger.info(`Starting stage ${stage.name}`);
+    await executeStage(stage, cwd, {
+      logger,
+      stdio: {
+        stdout: process.stdout,
+        stderr: process.stderr,
+      },
+    });
 
     if (stage.name === lastStageName) {
       break;

@@ -35,16 +35,12 @@ const convertToStage = (
       name: stageCfg,
       tasks: [convertToTask(stageCfg, 'stream')],
       parallel: false,
-      background: false,
     };
   }
 
   let defaultOutputMode: OutputMode = 'stream';
   if (stageCfg.parallel) {
     defaultOutputMode = 'batch';
-  }
-  if (stageCfg.background) {
-    defaultOutputMode = 'ignore';
   }
 
   const tasks: LifecycleTask[] = stageCfg.tasks
@@ -54,7 +50,6 @@ const convertToStage = (
   return {
     // defaults
     parallel: false,
-    background: false,
     // apply config over defaults
     ...stageCfg,
     tasks,

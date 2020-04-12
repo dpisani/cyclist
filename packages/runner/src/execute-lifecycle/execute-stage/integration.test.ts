@@ -50,7 +50,6 @@ describe('Lifecycle stage executor integration tests', () => {
       name: 'stdout',
       tasks: [{ script: 'stdout', outputMode: 'stream' }],
       parallel: false,
-      background: false,
     };
 
     const { stdio, data } = await createMockStdio();
@@ -74,7 +73,6 @@ describe('Lifecycle stage executor integration tests', () => {
       name: 'stderr',
       tasks: [{ script: 'stderr', outputMode: 'stream' }],
       parallel: false,
-      background: false,
     };
 
     const { stdio, data } = await createMockStdio();
@@ -98,7 +96,6 @@ describe('Lifecycle stage executor integration tests', () => {
       name: 'error',
       tasks: [{ script: 'error', outputMode: 'stream' }],
       parallel: false,
-      background: false,
     };
 
     const { stdio } = await createMockStdio();
@@ -120,7 +117,6 @@ describe('Lifecycle stage executor integration tests', () => {
         { script: 'three', outputMode: 'stream' },
       ],
       parallel: false,
-      background: false,
     };
 
     const { stdio, data } = await createMockStdio();
@@ -145,7 +141,6 @@ describe('Lifecycle stage executor integration tests', () => {
         { script: 'stderr', outputMode: 'ignore' },
       ],
       parallel: false,
-      background: false,
     };
 
     const { stdio, data } = await createMockStdio();
@@ -174,7 +169,6 @@ describe('Lifecycle stage executor integration tests', () => {
           { script: 'fast', outputMode: 'stream' },
         ],
         parallel: true,
-        background: false,
       };
 
       const { stdio, data } = await createMockStdio();
@@ -199,7 +193,6 @@ describe('Lifecycle stage executor integration tests', () => {
           { script: 'slow-boops', outputMode: 'batch' },
         ],
         parallel: true,
-        background: false,
       };
 
       const { stdio, data } = await createMockStdio();
@@ -224,7 +217,6 @@ describe('Lifecycle stage executor integration tests', () => {
           { script: 'slow-boops', outputMode: 'stream' },
         ],
         parallel: true,
-        background: false,
       };
 
       const { stdio, data } = await createMockStdio();

@@ -12,7 +12,6 @@ export interface LifecycleStageConfig {
   name: string;
   tasks?: (string | LifecycleTaskConfig)[];
   parallel?: boolean;
-  background?: boolean;
 }
 
 export type OutputMode = 'stream' | 'batch' | 'ignore';
@@ -31,7 +30,6 @@ export interface LifecycleStage {
   name: string;
   tasks: LifecycleTask[];
   parallel: boolean;
-  background: boolean;
 }
 
 export interface LifecycleTask {

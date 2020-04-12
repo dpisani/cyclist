@@ -35,8 +35,6 @@ const runSequentialTasks = async (
 ) => {
   for (let task of tasks) {
     await runTaskScript(task.script, task.outputMode, cwd, { stdio, logger });
-
-    logger.info(`Completed task ${chalk.bold(task)}`);
   }
 };
 

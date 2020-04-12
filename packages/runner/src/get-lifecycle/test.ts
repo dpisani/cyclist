@@ -19,13 +19,11 @@ describe('Get build lifecycle utility', () => {
           name: 'stage-1',
           tasks: [{ script: 'stage-1', outputMode: 'stream' }],
           parallel: false,
-          background: false,
         },
         {
           name: 'stage-2',
           tasks: [{ script: 'stage-2', outputMode: 'stream' }],
           parallel: false,
-          background: false,
         },
       ],
     });
@@ -54,7 +52,6 @@ describe('Get build lifecycle utility', () => {
           name: 'stage-1',
           tasks: [{ script: 'stage-1', outputMode: 'stream' }],
           parallel: false,
-          background: false,
         },
       ],
     });
@@ -80,7 +77,6 @@ describe('Get build lifecycle utility', () => {
             { script: 'task-2', outputMode: 'stream' },
           ],
           parallel: false,
-          background: false,
         },
       ],
     });
@@ -90,7 +86,7 @@ describe('Get build lifecycle utility', () => {
     const configExpandedStage: Config = {
       lifecycles: {
         'my-cycle': {
-          stages: [{ name: 'stage-1', parallel: true, background: true }],
+          stages: [{ name: 'stage-1', parallel: true }],
         },
       },
     };
@@ -101,7 +97,6 @@ describe('Get build lifecycle utility', () => {
       stages: [
         {
           parallel: true,
-          background: true,
         },
       ],
     });
@@ -135,7 +130,6 @@ describe('Get build lifecycle utility', () => {
             { script: 'task-2', outputMode: 'ignore' },
           ],
           parallel: false,
-          background: false,
         },
       ],
     });
@@ -154,22 +148,6 @@ describe('Get build lifecycle utility', () => {
 
     lifecycle!.stages[0].tasks.should.deepEqual([
       { script: 'stage-1', outputMode: 'batch' },
-    ]);
-  });
-
-  it('defaults outputMode for tasks to ignore when background=true', () => {
-    const configExpandedStage: Config = {
-      lifecycles: {
-        'my-cycle': {
-          stages: [{ name: 'stage-1', background: true }],
-        },
-      },
-    };
-
-    const lifecycle = getLifecycle('my-cycle', configExpandedStage);
-
-    lifecycle!.stages[0].tasks.should.deepEqual([
-      { script: 'stage-1', outputMode: 'ignore' },
     ]);
   });
 });

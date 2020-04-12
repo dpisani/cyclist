@@ -10,19 +10,16 @@ const mockLifecycle: Lifecycle = {
       name: 'one',
       tasks: [{ script: 'one', outputMode: 'stream' }],
       parallel: false,
-      background: false,
     },
     {
       name: 'two',
       tasks: [{ script: 'two', outputMode: 'stream' }],
       parallel: false,
-      background: false,
     },
     {
       name: 'three',
       tasks: [{ script: 'three', outputMode: 'stream' }],
       parallel: false,
-      background: false,
     },
   ],
 };
@@ -88,77 +85,5 @@ describe('Lifecycle execution orchestrator', () => {
     ).should.be.rejectedWith(Error('whoops: lifecycle stage not found'));
 
     mockExecuteStage.called.should.be.false();
-  });
-
-  describe('background stages', () => {
-    const backgroundLifecycle: Lifecycle = {
-      stages: [
-        {
-          name: 'one',
-          tasks: [{ script: 'one', outputMode: 'stream' }],
-          parallel: false,
-          background: true,
-        },
-        {
-          name: 'two',
-          tasks: [{ script: 'two', outputMode: 'stream' }],
-          parallel: false,
-          background: false,
-        },
-      ],
-    };
-
-    it('does not wait for a background stage to finish before moving on', async () => {
-      // First task hangs indefinitely
-      const mockExecuteStageLongTask = stub()
-        .onFirstCall()
-        .returns(new Promise(() => {}))
-        .onSecondCall()
-        .resolves();
-
-      await executeLifecycle(
-        { lifecycle: backgroundLifecycle, cwd: '/mock/cwd' },
-        { ...deps, executeStage: mockExecuteStageLongTask }
-      );
-
-      mockExecuteStageLongTask.firstCall.args.should.containDeepOrdered([
-        { name: 'one', tasks: [{ script: 'one', outputMode: 'stream' }] },
-      ]);
-      mockExecuteStageLongTask.secondCall.args.should.containDeepOrdered([
-        { name: 'two', tasks: [{ script: 'two', outputMode: 'stream' }] },
-      ]);
-    });
-
-    it('treats a background task like a normal one if it is last in the order', async () => {
-      let finishFirstTask;
-      let isLifecyclePending = true;
-
-      const mockExecuteStageLongTask = stub()
-        .onFirstCall()
-        .returns(
-          new Promise(resolve => {
-            finishFirstTask = resolve;
-          })
-        );
-
-      const lifecycle = executeLifecycle(
-        {
-          lifecycle: backgroundLifecycle,
-          cwd: '/mock/cwd',
-          lastStageName: 'one',
-        },
-        { ...deps, executeStage: mockExecuteStageLongTask }
-      ).then(() => {
-        isLifecyclePending = false;
-      });
-
-      // Check that the cycle hasn't moved on
-      isLifecyclePending.should.be.true();
-
-      finishFirstTask();
-      await lifecycle;
-
-      isLifecyclePending.should.be.false();
-    });
   });
 });
