@@ -1,4 +1,4 @@
 {
-  "spec": "./**/build/**/*test.js",
+  "spec": "./**/target/test/**/*test.js",
   "file": ["test-setup/mocha.js"]
 }

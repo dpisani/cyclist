@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["**/*test.ts"],
-  "exclude": ["build", "node_modules"],
-  "references": [{ "path": "./tsconfig.json" }]
+  "exclude": ["target", "node_modules"],
+  "compilerOptions": {
+    "outDir": "./target/test"
+  }
 }

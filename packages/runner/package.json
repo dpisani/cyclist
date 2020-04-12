@@ -5,16 +5,15 @@
   "author": "dpisani <dean.a.pisani@gmail.com>",
   "license": "MIT",
   "bin": {
-    "cyclist": "./build/src/bin.js"
+    "cyclist": "./target/build/src/bin.js"
   },
   "files": [
-    "build/**/*.js",
-    "build/**/*.d.ts"
+    "target/build"
   ],
   "scripts": {
     "clean": "rm -rf build",
-    "build:link": "chmod +x ./build/src/bin.js && yarn link",
-    "start": "node build/src/bin.js"
+    "build:link": "chmod +x ./target/build/src/bin.js && yarn link",
+    "start": "node target/build/src/bin.js"
   },
   "dependencies": {
     "@npmcli/run-script": "^1.2.1",
