@@ -5,7 +5,7 @@ export interface Logger {
   error: typeof console.log;
 }
 
-const LOG_PREFIX: string = '[Cyclist]';
+const LOG_PREFIX = '[Cyclist]';
 
 export default class CyclistLogger implements Logger {
   public info(...args: ConsoleArgs) {

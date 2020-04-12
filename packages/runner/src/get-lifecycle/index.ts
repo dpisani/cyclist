@@ -11,19 +11,20 @@ import {
 
 // Converts a user supplied config into a complete config with the correct defaults
 
-export default (lifecycleName: string, config: Config): Lifecycle | null => {
-  if (config.lifecycles[lifecycleName]) {
-    return convertToLifecycle(config.lifecycles[lifecycleName]);
+const convertToTask = (
+  taskCfg: string | LifecycleTaskConfig,
+  defaultOutputMode: OutputMode
+): LifecycleTask => {
+  if (typeof taskCfg === 'string') {
+    return {
+      script: taskCfg,
+      outputMode: defaultOutputMode,
+    };
   }
 
-  return null;
-};
-
-const convertToLifecycle = (lifecycleCfg: LifecycleConfig): Lifecycle => {
-  const stages = lifecycleCfg.stages.map(s => convertToStage(s));
-
   return {
-    stages,
+    outputMode: defaultOutputMode,
+    ...taskCfg,
   };
 };
 
@@ -56,19 +57,18 @@ const convertToStage = (
   };
 };
 
-const convertToTask = (
-  taskCfg: string | LifecycleTaskConfig,
-  defaultOutputMode: OutputMode
-): LifecycleTask => {
-  if (typeof taskCfg === 'string') {
-    return {
-      script: taskCfg,
-      outputMode: defaultOutputMode,
-    };
-  }
+const convertToLifecycle = (lifecycleCfg: LifecycleConfig): Lifecycle => {
+  const stages = lifecycleCfg.stages.map(s => convertToStage(s));
 
   return {
-    outputMode: defaultOutputMode,
-    ...taskCfg,
+    stages,
   };
+};
+
+export default (lifecycleName: string, config: Config): Lifecycle | null => {
+  if (config.lifecycles[lifecycleName]) {
+    return convertToLifecycle(config.lifecycles[lifecycleName]);
+  }
+
+  return null;
 };

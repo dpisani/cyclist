@@ -16,9 +16,11 @@
     "test-build:watch": "tsc --build tsconfig-test.json --watch",
     "test": "mocha",
     "test:watch": "mocha --watch",
-    "validate": "manypkg check && yarn prettier --check",
+    "lint": "eslint packages/*/src --ext .ts",
+    "manypkg:check": "manypkg check",
     "version": "changeset version",
-    "prettier": "prettier **/*.ts"
+    "prettier": "prettier **/*.ts",
+    "prettier:check": "yarn prettier --check"
   },
   "workspaces": [
     "packages/*"
@@ -27,7 +29,14 @@
     "lifecycles": {
       "package": {
         "stages": [
-          "validate",
+          {
+            "name": "validate",
+            "tasks": [
+              "manypkg:check",
+              "prettier:check",
+              "lint"
+            ]
+          },
           "clean",
           "build",
           "test-clean",
@@ -66,6 +75,9 @@
     "@changesets/cli": "^2.5.1",
     "@manypkg/cli": "^0.10.0",
     "@types/mocha": "^7.0.1",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
+    "eslint": "^6.8.0",
     "mocha": "^7.0.1",
     "prettier": "^1.19.1",
     "should": "^13.2.3",

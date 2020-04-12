@@ -29,7 +29,7 @@ export const executeLifecycle = async (
     throw new Error(`${lastStageName}: lifecycle stage not found`);
   }
 
-  for (let stage of lifecycle.stages) {
+  for (const stage of lifecycle.stages) {
     logger.info(chalk.bold(stage.name));
     await executeStage(stage, cwd, {
       logger,

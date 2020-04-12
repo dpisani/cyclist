@@ -10,7 +10,9 @@ yargs
   .command(
     '$0 <lifecycle> [stage]',
     'Execute a lifecycle up to a given stage',
-    () => {},
+    () => {
+      /*no command builder*/
+    },
     async argv => {
       const { lifecycle: lifecycleName, stage, project: projectDir } = argv;
 

@@ -14,43 +14,6 @@ export interface Dependencies {
   logger: Logger;
 }
 
-export default async (
-  stage: LifecycleStage,
-  cwd: string,
-  deps: Dependencies
-) => {
-  if (stage.parallel) {
-    await runParallelTasks(stage.tasks, cwd, deps);
-  } else {
-    await runSequentialTasks(stage.tasks, cwd, deps);
-  }
-};
-
-// When running scripts sequentially, pipe directly to stdio
-const runSequentialTasks = async (
-  tasks: LifecycleTask[],
-  cwd: string,
-  { stdio, logger }: Dependencies
-) => {
-  for (let task of tasks) {
-    await runTaskScript(task.script, task.outputMode, cwd, { stdio, logger });
-  }
-};
-
-//When running multiple scripts in parallel, batch output of each
-const runParallelTasks = (
-  tasks: LifecycleTask[],
-  cwd: string,
-  { stdio, logger }: Dependencies
-) => {
-  logger.info(`Starting ${tasks.length} tasks in parallel`);
-  const executions = tasks.map(async task => {
-    await runTaskScript(task.script, task.outputMode, cwd, { stdio, logger });
-  });
-
-  return Promise.all(executions);
-};
-
 const runTaskScript = async (
   script: string,
   outputMode: OutputMode,
@@ -78,5 +41,42 @@ const runTaskScript = async (
   }
   if (stdioCfg[3] === 'pipe') {
     stdio.stderr.write(stderr);
+  }
+};
+
+// When running scripts sequentially, pipe directly to stdio
+const runSequentialTasks = async (
+  tasks: LifecycleTask[],
+  cwd: string,
+  { stdio, logger }: Dependencies
+) => {
+  for (const task of tasks) {
+    await runTaskScript(task.script, task.outputMode, cwd, { stdio, logger });
+  }
+};
+
+//When running multiple scripts in parallel, batch output of each
+const runParallelTasks = (
+  tasks: LifecycleTask[],
+  cwd: string,
+  { stdio, logger }: Dependencies
+) => {
+  logger.info(`Starting ${tasks.length} tasks in parallel`);
+  const executions = tasks.map(async task => {
+    await runTaskScript(task.script, task.outputMode, cwd, { stdio, logger });
+  });
+
+  return Promise.all(executions);
+};
+
+export default async (
+  stage: LifecycleStage,
+  cwd: string,
+  deps: Dependencies
+) => {
+  if (stage.parallel) {
+    await runParallelTasks(stage.tasks, cwd, deps);
+  } else {
+    await runSequentialTasks(stage.tasks, cwd, deps);
   }
 };
