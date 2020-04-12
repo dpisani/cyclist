@@ -8,6 +8,7 @@ import {
   LifecycleTaskConfig,
   OutputMode,
 } from '../types';
+import getConfig from '../get-config';
 
 // Converts a user supplied config into a complete config with the correct defaults
 
@@ -71,4 +72,18 @@ export default (lifecycleName: string, config: Config): Lifecycle | null => {
   }
 
   return null;
+};
+
+export const getAllLifecycles = (
+  config: Config
+): { [name: string]: Lifecycle } => {
+  const lifecycles = {};
+
+  for (const lifecycleName in config.lifecycles) {
+    lifecycles[lifecycleName] = convertToLifecycle(
+      config.lifecycles[lifecycleName]
+    );
+  }
+
+  return lifecycles;
 };

@@ -1,10 +1,13 @@
 import 'should';
-import getLifecycle from './index';
+import getLifecycle, { getAllLifecycles } from './index';
 import { Config } from '../types';
 
 const mockConfig: Config = {
   lifecycles: {
     'my-cycle': {
+      stages: ['stage-1', 'stage-2'],
+    },
+    'my-cycle-2': {
       stages: ['stage-1', 'stage-2'],
     },
   },
@@ -150,5 +153,13 @@ describe('Get build lifecycle utility', () => {
     lifecycle!.stages[0].tasks.should.deepEqual([
       { script: 'stage-1', outputMode: 'batch' },
     ]);
+  });
+
+  describe('Get all build lifecycles utility', () => {
+    it('should get configs for all lifecycles', () => {
+      const lifecycles = getAllLifecycles(mockConfig);
+
+      lifecycles.should.have.properties('my-cycle', 'my-cycle-2');
+    });
   });
 });

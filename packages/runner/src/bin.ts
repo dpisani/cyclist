@@ -2,42 +2,32 @@
 
 import * as path from 'path';
 import * as yargs from 'yargs';
-import getConfig from './get-config';
-import getLifecycle from './get-lifecycle';
-import executeLifecycle from './execute-lifecycle';
+import executeLifecycleCommand from './commands/execute-lifecycle';
+import listLifecyclesCommand from './commands/list-lifecycles';
 
 yargs
   .command(
-    '$0 <lifecycle> [stage]',
+    '$0 [lifecycle] [stage]',
     'Execute a lifecycle up to a given stage',
     () => {
       /*no command builder*/
     },
     async argv => {
-      const { lifecycle: lifecycleName, stage, project: projectDir } = argv;
+      const { lifecycle, stage, project: projectDir, list: showList } = argv;
 
       const cwd = projectDir
         ? path.resolve(projectDir as string)
         : process.cwd();
 
-      const config = await getConfig(cwd);
-      const lifecycle = getLifecycle(lifecycleName as string, config);
-
-      if (!lifecycle) {
-        console.error(`Could not find lifecycle ${lifecycleName}`);
-        process.exitCode = 1;
-        return;
-      }
-
-      try {
-        await executeLifecycle({
-          lifecycle,
-          lastStageName: stage as string | undefined,
-          cwd,
+      if (showList) {
+        await listLifecyclesCommand(cwd);
+      } else if (lifecycle) {
+        await executeLifecycleCommand(cwd, {
+          lifecycleName: lifecycle as string,
+          stageName: stage as string | undefined,
         });
-      } catch (e) {
-        process.exitCode = 1;
-        return;
+      } else {
+        throw 'No lifecycle provided. Run cyclist --list to show available lifecycles.';
       }
     }
   )
@@ -46,4 +36,8 @@ yargs
     type: 'string',
     description: 'directory of the project to run the lifecycle',
   })
-  .demandCommand().argv;
+  .option('list', {
+    alias: 'l',
+    type: 'boolean',
+    description: 'Lists available lifecycles and stages',
+  }).argv;
