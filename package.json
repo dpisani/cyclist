@@ -37,11 +37,12 @@
               "lint"
             ]
           },
-          "clean",
-          "build",
           "test-clean",
           "test-build",
           "test",
+          "clean",
+          "build",
+          "link:runner",
           "version"
         ]
       },
@@ -75,6 +76,7 @@
     "@changesets/cli": "^2.5.1",
     "@manypkg/cli": "^0.10.0",
     "@types/mocha": "^7.0.1",
+    "@types/should": "^13.0.0",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
     "eslint": "^6.8.0",

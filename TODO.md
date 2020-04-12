@@ -1,7 +1,5 @@
 # Bugs
 
-- Failed promise rejection when task fails
-
 # Future features
 
 - CLI command to list available lifecycles/stages

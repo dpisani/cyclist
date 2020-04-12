@@ -9,7 +9,7 @@
     "three": "echo three",
     "stdout": "echo success!",
     "stderr": "echo error! 1>&2",
-    "error": "exit 1"
+    "error": "echo error! 1>&2 && exit 1"
   },
   "cyclist": {
     "lifecycles": {

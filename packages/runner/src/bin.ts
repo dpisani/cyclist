@@ -29,11 +29,16 @@ yargs
         return;
       }
 
-      executeLifecycle({
-        lifecycle,
-        lastStageName: stage as string | undefined,
-        cwd,
-      });
+      try {
+        await executeLifecycle({
+          lifecycle,
+          lastStageName: stage as string | undefined,
+          cwd,
+        });
+      } catch (e) {
+        process.exitCode = 1;
+        return;
+      }
     }
   )
   .option('project', {

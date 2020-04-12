@@ -1,3 +1,4 @@
+import 'should';
 import { stub, resetHistory } from 'sinon';
 
 import { executeLifecycle } from './index';

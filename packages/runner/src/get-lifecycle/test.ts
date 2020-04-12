@@ -1,3 +1,4 @@
+import 'should';
 import getLifecycle from './index';
 import { Config } from '../types';
 

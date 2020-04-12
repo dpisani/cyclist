@@ -1,3 +1,4 @@
+import 'should';
 import * as findUp from 'find-up';
 import * as path from 'path';
 import * as tmp from 'tmp-promise';
@@ -22,12 +23,15 @@ const copyFixtureToTemp = async (fixtureName: string): Promise<string> => {
 };
 
 // Creates a temporary file to stream to, and a way to extract the data written to it
-const createObservableStream = async () => {
+const createObservableStream = async (): Promise<{
+  stream: fs.WriteStream;
+  getData: () => Promise<Buffer>;
+}> => {
   const tmpFile = await tmp.file();
 
   const stream = fs.createWriteStream(tmpFile.path);
 
-  const getData = () => fs.readFile(tmpFile.path);
+  const getData = (): Promise<Buffer> => fs.readFile(tmpFile.path);
 
   return { stream, getData };
 };
@@ -103,7 +107,10 @@ describe('Lifecycle stage executor integration tests', () => {
     return executeStage(stage, fixturePath, {
       stdio,
       logger: createMockLogger(),
-    }).should.be.rejected();
+    }).should.be.rejectedWith({
+      task: stage.tasks[0],
+      code: 1,
+    });
   });
 
   it('runs a sequence of package scripts', async () => {
@@ -155,6 +162,28 @@ describe('Lifecycle stage executor integration tests', () => {
 
     outData.should.be.empty();
     errData.should.be.empty();
+  });
+
+  it('flushes output from failed commands before rejecting when outputMode is batch', async () => {
+    const fixturePath = await copyFixtureToTemp('basic-project');
+
+    const stage: LifecycleStage = {
+      name: 'error',
+      tasks: [{ script: 'error', outputMode: 'batch' }],
+      parallel: false,
+    };
+
+    const { stdio, data } = await createMockStdio();
+
+    try {
+      await executeStage(stage, fixturePath, {
+        stdio,
+        logger: createMockLogger(),
+      });
+    } catch (e) {
+      const errData = await data.getStderr();
+      errData.toString().should.equal('error!\n');
+    }
   });
 
   describe('parallel stages', () => {
