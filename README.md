@@ -28,9 +28,7 @@ We can configure this lifecycle by defining it in our `package.json`:
 {
   "cyclist": {
     "lifecycles": {
-      "package": {
-        "stages": ["clean", "lint", "build", "publish"]
-      }
+      "package": ["clean", "lint", "build", "publish"]
     }
   }
 }

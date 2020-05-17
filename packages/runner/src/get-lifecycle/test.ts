@@ -7,9 +7,7 @@ const mockConfig: Config = {
     'my-cycle': {
       stages: ['stage-1', 'stage-2'],
     },
-    'my-cycle-2': {
-      stages: ['stage-1', 'stage-2'],
-    },
+    'my-cycle-2': ['stage-1', 'stage-2'],
   },
 };
 

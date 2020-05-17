@@ -1,6 +1,7 @@
 # @cyclist/runner
 
-A CLI tool to orchestrate build steps for your project.
+A CLI tool to orchestrate build steps for your project. Cyclist runs scripts listed in your package.json
+in order based on lifecycles that you configure.
 
 ## Installation
 
@@ -10,7 +11,24 @@ npm install -g @cyclist/runner
 yarn global add @cyclist/runner
 ```
 
-# Configuration
+## Usage
+
+You can list all available lifecycles for a project by running
+
+```bash
+cyclist --list
+```
+
+Running a lifecycle is done in the terminal:
+
+```bash
+cyclist <lifecycle name> [stage name]
+```
+
+Cyclist will run stages in the given lifecycle in sequence, in a manner similar to `npm run`. The stage name argument
+is optional and will cause Cyclist to only run stages up to and including the one provided.
+
+## Configuration
 
 Configuration for Cyclist can be added to the following places:
 
@@ -19,17 +37,13 @@ Configuration for Cyclist can be added to the following places:
 - exported as a module in a `cyclist.config.js` file
 
 The main component of the config is the `lifecycles` property which is read by the CLI
-to find all the available lifecycles.
+to find all the available lifecycles. e.g.
 
 ```json
 {
   "lifecycles": {
-    "dev": {
-      "stages": ["build", "start"]
-    },
-    "verify": {
-      "stages": ["lint", "build", "test"]
-    }
+    "dev": ["build", "start"],
+    "verify": ["lint", "build", "test"]
   }
 }
 ```
@@ -58,13 +72,23 @@ An array of tasks to be run for a stage. A task can either be a string correspon
   - `batch` Wait for a task to complete before sending all its output to the console.
   - `ignore` Don't display any console output.
 
-# Usage
+## Example configs
 
-Running a lifecycle is done in the terminal:
+### Parallel tasks
 
-```bash
-cyclist <lifecycle name> [stage name]
+Run your lint and test jobs in parallel before building a dist
+
+```json
+{
+  "lifecycles": {
+    "build-dist": [
+      {
+        "name": "validate",
+        "tasks": ["lint", "test"],
+        "parallel": true
+      },
+      "build"
+    ]
+  }
+}
 ```
-
-Cyclist will run stages in the given lifecycle in sequence, in a manner similar to `npm run`. The stage name argument
-is optional and will cause Cyclist to only run stages up to and including the one provided.

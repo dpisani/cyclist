@@ -3,6 +3,8 @@
   "version": "0.5.0",
   "description": "Orchestrator for package build lifecycles",
   "author": "dpisani <dean.a.pisani@gmail.com>",
+  "repository": "git@github.com:dpisani/cyclist.git",
+  "homepage": "https://github.com/dpisani/cyclist",
   "license": "MIT",
   "bin": {
     "cyclist": "./target/build/src/bin.js"

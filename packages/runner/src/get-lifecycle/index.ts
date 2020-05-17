@@ -7,6 +7,7 @@ import {
   LifecycleTask,
   LifecycleTaskConfig,
   OutputMode,
+  LifecycleStagesList,
 } from '../types';
 
 // Converts a user supplied config into a complete config with the correct defaults
@@ -59,8 +60,14 @@ const convertToStage = (
   };
 };
 
-const convertToLifecycle = (lifecycleCfg: LifecycleConfig): Lifecycle => {
-  const stages = lifecycleCfg.stages.map(s => convertToStage(s));
+const convertToLifecycle = (
+  lifecycleCfg: LifecycleConfig | LifecycleStagesList
+): Lifecycle => {
+  const configStages = Array.isArray(lifecycleCfg)
+    ? lifecycleCfg
+    : lifecycleCfg.stages;
+
+  const stages = configStages.map(s => convertToStage(s));
 
   return {
     stages,

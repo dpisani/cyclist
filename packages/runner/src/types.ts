@@ -1,11 +1,13 @@
 export interface Config {
   lifecycles: {
-    [name: string]: LifecycleConfig;
+    [name: string]: LifecycleConfig | LifecycleStagesList;
   };
 }
 
+export type LifecycleStagesList = (string | LifecycleStageConfig)[];
+
 export interface LifecycleConfig {
-  stages: (string | LifecycleStageConfig)[];
+  stages: LifecycleStagesList;
 }
 
 export type OutputMode = 'stream' | 'batch' | 'ignore';
