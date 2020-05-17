@@ -155,6 +155,22 @@ describe('Get build lifecycle utility', () => {
     ]);
   });
 
+  it('uses stage default outputMode for tasks', () => {
+    const configExpandedStage: Config = {
+      lifecycles: {
+        'my-cycle': {
+          stages: [{ name: 'stage-1', parallel: true, outputMode: 'ignore' }],
+        },
+      },
+    };
+
+    const lifecycle = getLifecycle('my-cycle', configExpandedStage);
+
+    lifecycle!.stages[0].tasks.should.deepEqual([
+      { script: 'stage-1', outputMode: 'ignore' },
+    ]);
+  });
+
   describe('Get all build lifecycles utility', () => {
     it('should get configs for all lifecycles', () => {
       const lifecycles = getAllLifecycles(mockConfig);

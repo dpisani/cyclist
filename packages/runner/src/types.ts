@@ -8,13 +8,15 @@ export interface LifecycleConfig {
   stages: (string | LifecycleStageConfig)[];
 }
 
+export type OutputMode = 'stream' | 'batch' | 'ignore';
+
 export interface LifecycleStageConfig {
   name: string;
   tasks?: (string | LifecycleTaskConfig)[];
   parallel?: boolean;
+  // Sets the default output mode for tasks in this stage
+  outputMode?: OutputMode;
 }
-
-export type OutputMode = 'stream' | 'batch' | 'ignore';
 
 export interface LifecycleTaskConfig {
   script: string;

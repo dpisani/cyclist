@@ -43,6 +43,10 @@ An array of stages. A stage can either be a string name or an object with the fo
 - `name` The name of the stage that can be referenced using the CLI
 - `tasks` _(optional)_ An array of tasks to run in this stage. Defaults to `[<name>]`
 - `parallel` _(optional)_ Whether all the tasks in this stage should be run in parallel to each other. Defaults to `false`
+- `outputMode` _(optional)_ Sets the default `outputMode` on tasks in this stage. Can be one of the following:
+  - `stream` Stream output from tasks directly to the console. _Default_
+  - `batch` Wait for a task to complete before sending all its output to the console. _Default when the stage has `parallel: true` set_
+  - `ignore` Don't display any console output.
 
 ### `tasks`
 
@@ -50,8 +54,8 @@ An array of tasks to be run for a stage. A task can either be a string correspon
 
 - `script` The script to run. This must correspond to the name of a script in the package being worked upon
 - `outputMode` _(optional)_ How stdio output from this task should be handled. Can be one of the following:
-  - `stream` Stream task output directly to the console. _Default_
-  - `batch` Wait for a task to complete before displaying all its output to the console. _Default when the stage has `parallel: true`_
+  - `stream` Stream task output directly to the console.
+  - `batch` Wait for a task to complete before sending all its output to the console.
   - `ignore` Don't display any console output.
 
 # Usage

@@ -8,7 +8,6 @@ import {
   LifecycleTaskConfig,
   OutputMode,
 } from '../types';
-import getConfig from '../get-config';
 
 // Converts a user supplied config into a complete config with the correct defaults
 
@@ -41,7 +40,9 @@ const convertToStage = (
   }
 
   let defaultOutputMode: OutputMode = 'stream';
-  if (stageCfg.parallel) {
+  if (stageCfg.outputMode) {
+    defaultOutputMode = stageCfg.outputMode;
+  } else if (stageCfg.parallel) {
     defaultOutputMode = 'batch';
   }
 
