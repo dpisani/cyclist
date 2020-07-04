@@ -1,7 +1,7 @@
 import { Writable } from 'stream';
 import * as runScript from '@npmcli/run-script';
 
-import { LifecycleStage, OutputMode, LifecycleTask } from '../../types';
+import { LifecycleStage, LifecycleTask } from '../../types';
 import { Logger } from '../../logger';
 
 export interface InjectedStdio {

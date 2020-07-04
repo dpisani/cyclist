@@ -1,5 +1,18 @@
 # @cyclist/runner
 
+## 0.6.0
+
+### Minor Changes
+
+- 282602e: Allow setting the default output mode for an entire stage in config
+- ed5a789: Add --list command to show available lifecycles
+- 3988292: Remove background stages support
+- 0bcb5ac: Allow an array of stages to be provided as a shorthand lifecycle configuration
+
+### Patch Changes
+
+- 80266d6: Fix unhandled promise rejections when running failed commands and improve logging
+
 ## 0.5.0
 
 ### Minor Changes
