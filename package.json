@@ -11,16 +11,17 @@
     "clean": "tsc --build --clean",
     "build": "tsc --build",
     "link:runner": "yarn workspace @cyclist/runner build:link",
-    "test-clean": "tsc --build --clean tsconfig-test.json",
-    "test-build": "tsc --build tsconfig-test.json",
-    "test-build:watch": "tsc --build tsconfig-test.json --watch",
+    "dev-clean": "tsc --build --clean tsconfig-dev.json",
+    "dev-build": "tsc --build tsconfig-dev.json",
+    "dev-build:watch": "tsc --build tsconfig-dev.json --watch",
     "test": "mocha",
     "test:watch": "mocha --watch",
     "lint": "eslint packages/*/src --ext .ts",
     "manypkg:check": "manypkg check",
     "version": "changeset version",
     "prettier": "prettier **/*.ts",
-    "prettier:check": "yarn prettier --check"
+    "prettier:check": "yarn prettier --check",
+    "generate-types": "manypkg run @cyclist/schema generate:types"
   },
   "workspaces": [
     "packages/*"
@@ -37,30 +38,36 @@
               "lint"
             ]
           },
-          "test-clean",
-          "test-build",
+          "generate-types",
+          {
+            "name": "dev-build",
+            "tasks": [
+              "dev-clean",
+              "dev-build",
+              "link:runner"
+            ]
+          },
           "test",
           "clean",
           "build",
-          "link:runner",
           "version"
         ]
       },
       "dev:build": {
         "stages": [
-          "clean",
-          "build",
+          "dev-clean",
+          "dev-build",
           "link:runner"
         ]
       },
       "dev:test": {
         "stages": [
-          "test-clean",
-          "test-build",
+          "dev-clean",
+          "dev-build",
           {
             "name": "run-tests",
             "tasks": [
-              "test-build:watch",
+              "dev-build:watch",
               {
                 "script": "test:watch",
                 "outputMode": "stream"

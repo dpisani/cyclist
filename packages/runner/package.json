@@ -13,9 +13,8 @@
     "target/build"
   ],
   "scripts": {
-    "clean": "rm -rf build",
-    "build:link": "chmod +x ./target/build/src/bin.js && yarn link",
-    "start": "node target/build/src/bin.js"
+    "build:link": "chmod +x ./target/dev/src/bin.js && yarn link",
+    "start": "node target/dev/src/bin.js"
   },
   "dependencies": {
     "@npmcli/run-script": "^1.2.1",

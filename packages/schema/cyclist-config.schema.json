@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cyclist configuration",
+  "description": "A configuration object for a project using the Cyclist build lifecycles tool.",
+  "type": "object",
+  "properties": {
+    "lifecycles": {
+      "description": "A set of build lifecycles available to this project.",
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          { "$ref": "#/definitions/lifecycleStagesList" },
+          { "$ref": "#/definitions/lifecycleConfig" }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "lifecycleConfig": {
+      "properties": {
+        "stages": {
+          "$ref": "#/definitions/lifecycleStagesList"
+        }
+      },
+      "required": ["stages"]
+    },
+    "lifecycleStagesList": {
+      "type": "array",
+      "description": "An array of stages. A stage can either be a string name corresponding to a script or a config object.",
+      "items": {
+        "anyOf": [
+          { "type": "string", "description": "The name of a script" },
+          { "$ref": "#/definitions/lifecycleStageConfig" }
+        ]
+      }
+    },
+    "lifecycleStageConfig": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the stage that can be referenced using the CLI"
+        },
+        "tasks": {
+          "type": "array",
+          "description": "An array of tasks to run in this stage. If not provided the stage name is used as the default task",
+          "items": {
+            "anyOf": [
+              { "type": "string" },
+              { "$ref": "#/definitions/lifecycleTaskConfig" }
+            ]
+          }
+        },
+        "parallel": {
+          "type": "boolean",
+          "description": "Whether all the tasks in this stage should be run in parallel to each other",
+          "default": false
+        },
+        "outputMode": {
+          "$ref": "#/definitions/outputMode",
+          "description": "Sets the default outputMode on tasks within this stage.",
+          "default": "stream"
+        }
+      },
+      "required": ["name"]
+    },
+
+    "outputMode": {
+      "oneOf": [
+        {
+          "enum": ["stream"],
+          "description": "Stream output from tasks directly to the console."
+        },
+        {
+          "enum": ["batch"],
+          "description": "Wait for a task to complete before sending all its output to the console. Default when the stage has `parallel: true` set."
+        },
+        {
+          "enum": ["ignore"],
+          "description": "Don't display any console output."
+        }
+      ]
+    },
+    "lifecycleTaskConfig": {
+      "properties": {
+        "script": {
+          "type": "string",
+          "description": "The script to run. This must correspond to the name of a script in the package being worked upon."
+        },
+        "outputMode": {
+          "$ref": "#/definitions/outputMode",
+          "description": "How stdio output from this task should be handled."
+        }
+      },
+      "required": ["script"]
+    }
+  }
+}

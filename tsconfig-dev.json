@@ -1,0 +1,5 @@
+{
+  "references": [{ "path": "./packages/runner/tsconfig-dev.json" }],
+  "files": [],
+  "include": []
+}

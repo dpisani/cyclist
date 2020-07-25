@@ -1,0 +1,16 @@
+{
+  "name": "@cyclist/schema",
+  "version": "0.0.0",
+  "description": "Schema and types for cyclist configs",
+  "author": "dpisani <dean.a.pisani@gmail.com>",
+  "repository": "git@github.com:dpisani/cyclist.git",
+  "homepage": "https://github.com/dpisani/cyclist",
+  "license": "MIT",
+  "types": "config-schema.d.ts",
+  "scripts": {
+    "generate:types": "json2ts -i cyclist-config.schema.json -o config-schema.d.ts"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "^9.1.1"
+  }
+}

@@ -2,7 +2,7 @@
   "extends": "../../tsconfig-base.json",
   "compilerOptions": {
     "composite": true,
-    "outDir": "./target/build"
+    "outDir": "./target/cjs"
   },
   "exclude": ["target", "node_modules", "**/*test.ts"]
 }
