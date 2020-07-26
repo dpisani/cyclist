@@ -4,6 +4,7 @@
     "module": "commonjs",
     "declaration": true,
     "declarationMap": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "resolveJsonModule": true
   }
 }

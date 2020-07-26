@@ -10,9 +10,7 @@ export default async (
   const lifecycle = getLifecycle(lifecycleName as string, config);
 
   if (!lifecycle) {
-    console.error(`Could not find lifecycle ${lifecycleName}`);
-    process.exitCode = 1;
-    return;
+    throw new Error(`Could not find lifecycle ${lifecycleName}`);
   }
 
   try {

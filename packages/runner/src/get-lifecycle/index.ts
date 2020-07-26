@@ -1,14 +1,11 @@
+import { Lifecycle, LifecycleStage, LifecycleTask, OutputMode } from '../types';
 import {
-  Config,
-  Lifecycle,
+  CyclistConfiguration,
   LifecycleConfig,
-  LifecycleStage,
-  LifecycleStageConfig,
-  LifecycleTask,
   LifecycleTaskConfig,
-  OutputMode,
+  LifecycleStageConfig,
   LifecycleStagesList,
-} from '../types';
+} from '@cyclist/schema';
 
 // Converts a user supplied config into a complete config with the correct defaults
 
@@ -74,16 +71,20 @@ const convertToLifecycle = (
   };
 };
 
-export default (lifecycleName: string, config: Config): Lifecycle | null => {
-  if (config.lifecycles[lifecycleName]) {
-    return convertToLifecycle(config.lifecycles[lifecycleName]);
+export default (
+  lifecycleName: string,
+  config: CyclistConfiguration
+): Lifecycle | null => {
+  const lifecycleCfg = config.lifecycles && config.lifecycles[lifecycleName];
+  if (lifecycleCfg) {
+    return convertToLifecycle(lifecycleCfg);
   }
 
   return null;
 };
 
 export const getAllLifecycles = (
-  config: Config
+  config: CyclistConfiguration
 ): { [name: string]: Lifecycle } => {
   const lifecycles = {};
 

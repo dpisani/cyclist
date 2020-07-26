@@ -1,12 +1,12 @@
 import { expect, assert } from 'chai';
 import * as sinon from 'sinon';
 import getConfig from './main';
-import { Config } from '../types';
+import { CyclistConfiguration } from '@cyclist/schema';
 
 const configSearchMock = sinon.stub();
 const cosmiconfigMock = sinon.stub().returns({ search: configSearchMock });
 
-const mockConfig: Config = {
+const mockConfig: CyclistConfiguration = {
   lifecycles: {
     default: {
       stages: ['stage1', 'stage2'],
@@ -80,10 +80,8 @@ describe('Get lifecycle config utility', () => {
         validateConfig: failedValidateConfigMock,
       });
     } catch (e) {
-      expect(e).to.deep.equal({
-        isValid: false,
-        messages: ['You did it wrong.'],
-      });
+      expect(e).to.be.an('Error');
+      expect(e.message).to.match(/You did it wrong/);
 
       return;
     }

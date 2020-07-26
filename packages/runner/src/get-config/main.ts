@@ -1,5 +1,5 @@
 import { cosmiconfig as cosmiconfigModule } from 'cosmiconfig';
-import { Config } from '../types';
+import { CyclistConfiguration } from '@cyclist/schema';
 
 const CONFIG_MODULE_NAME = 'cyclist';
 
@@ -14,7 +14,7 @@ export default async (
       config: unknown
     ) => { isValid: boolean; messages: string[] };
   }
-): Promise<Config> => {
+): Promise<CyclistConfiguration> => {
   const configExplorer = cosmiconfig(CONFIG_MODULE_NAME);
   const result = await configExplorer.search(cwd);
 
@@ -24,5 +24,8 @@ export default async (
     return result?.config;
   }
 
-  throw configValidation;
+  throw new Error(`There was a problem in your cyclist config:
+
+${configValidation.messages.join('\n')}
+`);
 };

@@ -1,8 +1,8 @@
 import 'should';
 import getLifecycle, { getAllLifecycles } from './index';
-import { Config } from '../types';
+import { CyclistConfiguration } from '@cyclist/schema';
 
-const mockConfig: Config = {
+const mockConfig: CyclistConfiguration = {
   lifecycles: {
     'my-cycle': {
       stages: ['stage-1', 'stage-2'],
@@ -38,7 +38,7 @@ describe('Get build lifecycle utility', () => {
   });
 
   it('provides defaults for stage configs', () => {
-    const configExpandedStage: Config = {
+    const configExpandedStage: CyclistConfiguration = {
       lifecycles: {
         'my-cycle': {
           stages: [{ name: 'stage-1' }],
@@ -60,7 +60,7 @@ describe('Get build lifecycle utility', () => {
   });
 
   it('accepts an array of tasks as strings and reformats their shape', () => {
-    const configExpandedStage: Config = {
+    const configExpandedStage: CyclistConfiguration = {
       lifecycles: {
         'my-cycle': {
           stages: [{ name: 'stage-1', tasks: ['task-1', 'task-2'] }],
@@ -85,7 +85,7 @@ describe('Get build lifecycle utility', () => {
   });
 
   it('accepts boolean options for stages', () => {
-    const configExpandedStage: Config = {
+    const configExpandedStage: CyclistConfiguration = {
       lifecycles: {
         'my-cycle': {
           stages: [{ name: 'stage-1', parallel: true }],
@@ -105,7 +105,7 @@ describe('Get build lifecycle utility', () => {
   });
 
   it('accepts options for tasks', () => {
-    const configExpandedStage: Config = {
+    const configExpandedStage: CyclistConfiguration = {
       lifecycles: {
         'my-cycle': {
           stages: [
@@ -138,7 +138,7 @@ describe('Get build lifecycle utility', () => {
   });
 
   it('defaults outputMode for tasks to batch when parallel=true', () => {
-    const configExpandedStage: Config = {
+    const configExpandedStage: CyclistConfiguration = {
       lifecycles: {
         'my-cycle': {
           stages: [{ name: 'stage-1', parallel: true }],
@@ -154,7 +154,7 @@ describe('Get build lifecycle utility', () => {
   });
 
   it('uses stage default outputMode for tasks', () => {
-    const configExpandedStage: Config = {
+    const configExpandedStage: CyclistConfiguration = {
       lifecycles: {
         'my-cycle': {
           stages: [{ name: 'stage-1', parallel: true, outputMode: 'ignore' }],

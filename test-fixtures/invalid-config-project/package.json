@@ -1,0 +1,26 @@
+{
+  "name": "basic-project",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "one": "echo one",
+    "two": "echo two",
+    "three": "echo three"
+  },
+  "cyclist": {
+    "lifecycles": {
+      "main": {
+        "stages": [
+          {
+            "tasks": [
+              "one",
+              "two",
+              "three"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

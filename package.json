@@ -55,7 +55,6 @@
       },
       "dev:build": {
         "stages": [
-          "dev-clean",
           "dev-build",
           "link:runner"
         ]

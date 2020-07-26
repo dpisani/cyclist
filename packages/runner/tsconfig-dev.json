@@ -1,7 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["target", "node_modules"],
-  "compilerOptions": {
-    "outDir": "./target/dev"
-  }
+  "exclude": ["build", "node_modules"]
 }

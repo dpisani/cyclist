@@ -1,1 +1,2 @@
-target/
+build/
+packages/schema/config-schema.d.ts

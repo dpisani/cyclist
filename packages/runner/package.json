@@ -7,17 +7,19 @@
   "homepage": "https://github.com/dpisani/cyclist",
   "license": "MIT",
   "bin": {
-    "cyclist": "./target/build/src/bin.js"
+    "cyclist": "./build/src/bin.js"
   },
   "files": [
-    "target/build"
+    "build"
   ],
   "scripts": {
-    "build:link": "chmod +x ./target/dev/src/bin.js && yarn link",
-    "start": "node target/dev/src/bin.js"
+    "build:link": "chmod +x ./build/src/bin.js && yarn link",
+    "start": "node build/src/bin.js"
   },
   "dependencies": {
+    "@cyclist/schema": "0.0.0",
     "@npmcli/run-script": "^1.2.1",
+    "ajv": "^6.12.3",
     "chai": "^4.2.0",
     "chalk": "^3.0.0",
     "cosmiconfig": "^6.0.0",

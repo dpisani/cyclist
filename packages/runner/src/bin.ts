@@ -27,10 +27,19 @@ yargs
           stageName: stage as string | undefined,
         });
       } else {
-        throw 'No lifecycle provided. Run cyclist --list to show available lifecycles.';
+        throw new Error(
+          'No lifecycle provided. Run cyclist --list to show available lifecycles.'
+        );
       }
     }
   )
+  .fail((_, e, yargs) => {
+    if (e.message) {
+      console.error(e.message);
+    } else {
+      yargs.showHelp();
+    }
+  })
   .option('project', {
     alias: 'p',
     type: 'string',
