@@ -1,6 +1,6 @@
 {
   "name": "@cyclist/runner",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Orchestrator for package build lifecycles",
   "author": "dpisani <dean.a.pisani@gmail.com>",
   "repository": "git@github.com:dpisani/cyclist.git",
@@ -17,7 +17,7 @@
     "start": "node build/src/bin.js"
   },
   "dependencies": {
-    "@cyclist/schema": "0.0.0",
+    "@cyclist/schema": "0.1.0",
     "@npmcli/run-script": "^1.2.1",
     "ajv": "^6.12.3",
     "chai": "^4.2.0",

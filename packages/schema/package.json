@@ -1,6 +1,6 @@
 {
   "name": "@cyclist/schema",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Schema and types for cyclist configs",
   "author": "dpisani <dean.a.pisani@gmail.com>",
   "repository": "git@github.com:dpisani/cyclist.git",

@@ -1,5 +1,17 @@
 # @cyclist/runner
 
+## 0.7.0
+
+### Minor Changes
+
+- 0e844d9: Validate cyclist configs using JSON schema
+
+### Patch Changes
+
+- 78cce56: Made the default outputMode to be stream in all cases. Parallel stages no longer have the output mode set to batch
+- Updated dependencies [0e844d9]
+  - @cyclist/schema@0.1.0
+
 ## 0.6.0
 
 ### Minor Changes
