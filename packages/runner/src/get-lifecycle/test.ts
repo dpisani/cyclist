@@ -137,22 +137,6 @@ describe('Get build lifecycle utility', () => {
     });
   });
 
-  it('defaults outputMode for tasks to batch when parallel=true', () => {
-    const configExpandedStage: CyclistConfiguration = {
-      lifecycles: {
-        'my-cycle': {
-          stages: [{ name: 'stage-1', parallel: true }],
-        },
-      },
-    };
-
-    const lifecycle = getLifecycle('my-cycle', configExpandedStage);
-
-    lifecycle!.stages[0].tasks.should.deepEqual([
-      { script: 'stage-1', outputMode: 'batch' },
-    ]);
-  });
-
   it('uses stage default outputMode for tasks', () => {
     const configExpandedStage: CyclistConfiguration = {
       lifecycles: {
