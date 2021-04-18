@@ -54,4 +54,4 @@ More details about using and configuring lifecycle runner CLI can be found in th
 ## Inspiration
 
 - [Preconstruct](https://github.com/preconstruct/preconstruct) - a great tool for a smooth workflow in monorepos
-- [Maven](https://maven.apache.org/) - just because it's old doesn't mean it's bad
+- [Maven](https://maven.apache.org/) - contains lots of battle-hardened wisdom on how to do builds

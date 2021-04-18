@@ -1,0 +1,19 @@
+{
+  "name": "@cyclist/scaffold-ts-workspaces",
+  "version": "0.1.0",
+  "description": "Sets up TypeScript build configs for workspaces.",
+  "author": "dpisani <dean.a.pisani@gmail.com>",
+  "repository": "git@github.com:dpisani/cyclist.git",
+  "homepage": "https://github.com/dpisani/cyclist",
+  "license": "MIT",
+  "bin": "./build/src/bin.js",
+  "scripts": {},
+  "dependencies": {
+    "@manypkg/get-packages": "^1.1.1",
+    "deep-equal": "^2.0.5",
+    "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "@types/deep-equal": "^1.0.1"
+  }
+}

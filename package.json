@@ -10,6 +10,7 @@
   "scripts": {
     "clean": "tsc --build --clean",
     "build": "tsc --build",
+    "runner": "yarn workspace @cyclist/runner start",
     "link:runner": "yarn workspace @cyclist/runner build:link",
     "dev-clean": "tsc --build --clean tsconfig-dev.json",
     "dev-build": "tsc --build tsconfig-dev.json",
@@ -21,6 +22,7 @@
     "version": "changeset version",
     "prettier": "prettier **/*.ts",
     "prettier:check": "yarn prettier --check",
+    "prettier:fix": "yarn prettier --write",
     "generate-types": "manypkg run @cyclist/schema generate:types"
   },
   "workspaces": [
@@ -63,14 +65,12 @@
         "stages": [
           "dev-clean",
           "dev-build",
+          "link:runner",
           {
             "name": "run-tests",
             "tasks": [
               "dev-build:watch",
-              {
-                "script": "test:watch",
-                "outputMode": "stream"
-              }
+              "test:watch"
             ],
             "parallel": true
           }
@@ -89,6 +89,7 @@
     "mocha": "^7.0.1",
     "prettier": "^1.19.1",
     "should": "^13.2.3",
+    "source-map-support": "^0.5.19",
     "typescript": "^3.8.2"
   }
 }
