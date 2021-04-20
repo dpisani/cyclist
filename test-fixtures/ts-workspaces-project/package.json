@@ -1,0 +1,7 @@
+{
+  "name": "ts-workspaces-project-root",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "workspaces": ["workspace-1", "workspace-2"]
+}

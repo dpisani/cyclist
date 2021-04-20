@@ -4,41 +4,47 @@ import { getAmendments } from './get-amendments';
 describe('TS workspaces getAmendments utility', () => {
   it('returns nothing when there are no child workspaces', () => {
     getAmendments({
-      rootPackage: {
+      rootWorkspace: {
         definition: {
-          dir: 'root-dir',
+          dir: '/root-dir',
           packageJson: { name: 'root', version: '1.0.0' },
         },
-        tsconfig: {},
+        tsconfig: { tsconfigJson: {}, path: 'root-dir/tsconfig.json' },
       },
-      packages: [],
+      workspaces: [],
     }).should.be.empty();
   });
 
   describe('root workspace config', () => {
     it('returns nothing when all packages are referenced by the root config', () => {
       getAmendments({
-        rootPackage: {
+        rootWorkspace: {
           definition: {
-            dir: 'root-dir',
+            dir: '/root-dir',
             packageJson: { name: 'root', version: '1.0.0' },
           },
           tsconfig: {
-            references: [
-              {
-                path: 'packages/package1',
-              },
-            ],
+            tsconfigJson: {
+              references: [
+                {
+                  path: 'packages/package1',
+                },
+              ],
+            },
+            path: '/root-dir/tsconfig.json',
           },
         },
-        packages: [
+        workspaces: [
           {
             definition: {
-              dir: 'root-dir/packages/package1',
+              dir: '/root-dir/packages/package1',
               packageJson: { name: 'package1', version: '1.0.0' },
             },
             tsconfig: {
-              compilerOptions: { composite: true },
+              tsconfigJson: {
+                compilerOptions: { composite: true },
+              },
+              path: '/root-dir/packages/package1/tsconfig.json',
             },
           },
         ],
@@ -47,33 +53,42 @@ describe('TS workspaces getAmendments utility', () => {
 
     it('returns an amendment for root references when a package is missing from the list', () => {
       getAmendments({
-        rootPackage: {
+        rootWorkspace: {
           definition: {
             dir: '/root-dir',
             packageJson: { name: 'root', version: '1.0.0' },
           },
           tsconfig: {
-            references: [
-              {
-                path: './packages/package1',
-              },
-            ],
+            tsconfigJson: {
+              references: [
+                {
+                  path: './packages/package1',
+                },
+              ],
+            },
+            path: '/root-dir/tsconfig.json',
           },
         },
-        packages: [
+        workspaces: [
           {
             definition: {
               dir: '/root-dir/packages/package1',
               packageJson: { name: 'package1', version: '1.0.0' },
             },
-            tsconfig: { compilerOptions: { composite: true } },
+            tsconfig: {
+              tsconfigJson: { compilerOptions: { composite: true } },
+              path: '/root-dir/packages/package1/tsconfig.json',
+            },
           },
           {
             definition: {
               dir: '/root-dir/packages/package2',
               packageJson: { name: 'package2', version: '1.0.0' },
             },
-            tsconfig: { compilerOptions: { composite: true } },
+            tsconfig: {
+              tsconfigJson: { compilerOptions: { composite: true } },
+              path: '/root-dir/packages/package2/tsconfig.json',
+            },
           },
         ],
       }).should.deepEqual([
@@ -96,20 +111,23 @@ describe('TS workspaces getAmendments utility', () => {
 
     it('returns an amendment for root references when there are extraneous references', () => {
       getAmendments({
-        rootPackage: {
+        rootWorkspace: {
           definition: {
             dir: '/root-dir',
             packageJson: { name: 'root', version: '1.0.0' },
           },
           tsconfig: {
-            references: [
-              {
-                path: './packages/package1',
-              },
-            ],
+            tsconfigJson: {
+              references: [
+                {
+                  path: './packages/package1',
+                },
+              ],
+            },
+            path: '/root-dir/tsconfig.json',
           },
         },
-        packages: [],
+        workspaces: [],
       }).should.deepEqual([
         {
           filePath: '/root-dir/tsconfig.json',
@@ -122,29 +140,71 @@ describe('TS workspaces getAmendments utility', () => {
     });
   });
 
+  it('returns an amendment when the root tsconfig.json is missing', () => {
+    getAmendments({
+      rootWorkspace: {
+        definition: {
+          dir: '/root-dir',
+          packageJson: { name: 'root', version: '1.0.0' },
+        },
+        tsconfig: null,
+      },
+      workspaces: [
+        {
+          definition: {
+            dir: '/root-dir/packages/package1',
+            packageJson: { name: 'package1', version: '1.0.0' },
+          },
+          tsconfig: {
+            tsconfigJson: {
+              compilerOptions: { composite: true },
+            },
+            path: '/root-dir/packages/package1/tsconfig.json',
+          },
+        },
+      ],
+    }).should.deepEqual([
+      {
+        filePath: '/root-dir/tsconfig.json',
+        jsonPath: [],
+        desiredValue: {
+          references: [{ path: 'packages/package1' }],
+        },
+        description:
+          'You should have a root tsconfig to build the entire project.',
+      },
+    ]);
+  });
+
   describe('child workspaces config', () => {
     it('returns an amendment when a child tsconfig does not have composite set to true', () => {
       getAmendments({
-        rootPackage: {
+        rootWorkspace: {
           definition: {
             dir: '/root-dir',
             packageJson: { name: 'root', version: '1.0.0' },
           },
           tsconfig: {
-            references: [
-              {
-                path: 'packages/package1',
-              },
-            ],
+            tsconfigJson: {
+              references: [
+                {
+                  path: 'packages/package1',
+                },
+              ],
+            },
+            path: '/root-dir/tsconfig.json',
           },
         },
-        packages: [
+        workspaces: [
           {
             definition: {
               dir: '/root-dir/packages/package1',
               packageJson: { name: 'package1', version: '1.0.0' },
             },
-            tsconfig: { compilerOptions: {} },
+            tsconfig: {
+              tsconfigJson: { compilerOptions: {} },
+              path: '/root-dir/packages/package1/tsconfig.json',
+            },
           },
         ],
       }).should.deepEqual([
@@ -160,23 +220,26 @@ describe('TS workspaces getAmendments utility', () => {
 
     it('returns amendments to make references between dependant packages', () => {
       getAmendments({
-        rootPackage: {
+        rootWorkspace: {
           definition: {
             dir: '/root-dir',
             packageJson: { name: 'root', version: '1.0.0' },
           },
           tsconfig: {
-            references: [
-              {
-                path: 'packages/package1',
-              },
-              {
-                path: 'packages/package2',
-              },
-            ],
+            tsconfigJson: {
+              references: [
+                {
+                  path: 'packages/package1',
+                },
+                {
+                  path: 'packages/package2',
+                },
+              ],
+            },
+            path: '/root-dir/tsconfig.json',
           },
         },
-        packages: [
+        workspaces: [
           {
             definition: {
               dir: '/root-dir/packages/package1',
@@ -187,9 +250,12 @@ describe('TS workspaces getAmendments utility', () => {
               },
             },
             tsconfig: {
-              compilerOptions: {
-                composite: true,
+              tsconfigJson: {
+                compilerOptions: {
+                  composite: true,
+                },
               },
+              path: '/root-dir/packages/package1/tsconfig.json',
             },
           },
           {
@@ -200,7 +266,14 @@ describe('TS workspaces getAmendments utility', () => {
                 version: '1.0.0',
               },
             },
-            tsconfig: { compilerOptions: { composite: true } },
+            tsconfig: {
+              tsconfigJson: {
+                compilerOptions: {
+                  composite: true,
+                },
+              },
+              path: '/root-dir/packages/package2/tsconfig.json',
+            },
           },
         ],
       }).should.deepEqual([
@@ -220,23 +293,26 @@ describe('TS workspaces getAmendments utility', () => {
 
     it('returns amendments to make references between dev-dependant packages', () => {
       getAmendments({
-        rootPackage: {
+        rootWorkspace: {
           definition: {
             dir: '/root-dir',
             packageJson: { name: 'root', version: '1.0.0' },
           },
           tsconfig: {
-            references: [
-              {
-                path: 'packages/package1',
-              },
-              {
-                path: 'packages/package2',
-              },
-            ],
+            tsconfigJson: {
+              references: [
+                {
+                  path: 'packages/package1',
+                },
+                {
+                  path: 'packages/package2',
+                },
+              ],
+            },
+            path: '/root-dir/tsconfig.json',
           },
         },
-        packages: [
+        workspaces: [
           {
             definition: {
               dir: '/root-dir/packages/package1',
@@ -247,9 +323,12 @@ describe('TS workspaces getAmendments utility', () => {
               },
             },
             tsconfig: {
-              compilerOptions: {
-                composite: true,
+              tsconfigJson: {
+                compilerOptions: {
+                  composite: true,
+                },
               },
+              path: '/root-dir/packages/package1/tsconfig.json',
             },
           },
           {
@@ -260,7 +339,14 @@ describe('TS workspaces getAmendments utility', () => {
                 version: '1.0.0',
               },
             },
-            tsconfig: { compilerOptions: { composite: true } },
+            tsconfig: {
+              tsconfigJson: {
+                compilerOptions: {
+                  composite: true,
+                },
+              },
+              path: '/root-dir/packages/package2/tsconfig.json',
+            },
           },
         ],
       }).should.deepEqual([
@@ -280,23 +366,26 @@ describe('TS workspaces getAmendments utility', () => {
 
     it('returns amendments to make references between peer-dependant packages', () => {
       getAmendments({
-        rootPackage: {
+        rootWorkspace: {
           definition: {
             dir: '/root-dir',
             packageJson: { name: 'root', version: '1.0.0' },
           },
           tsconfig: {
-            references: [
-              {
-                path: 'packages/package1',
-              },
-              {
-                path: 'packages/package2',
-              },
-            ],
+            tsconfigJson: {
+              references: [
+                {
+                  path: 'packages/package1',
+                },
+                {
+                  path: 'packages/package2',
+                },
+              ],
+            },
+            path: '/root-dir/tsconfig.json',
           },
         },
-        packages: [
+        workspaces: [
           {
             definition: {
               dir: '/root-dir/packages/package1',
@@ -307,9 +396,12 @@ describe('TS workspaces getAmendments utility', () => {
               },
             },
             tsconfig: {
-              compilerOptions: {
-                composite: true,
+              tsconfigJson: {
+                compilerOptions: {
+                  composite: true,
+                },
               },
+              path: '/root-dir/packages/package1/tsconfig.json',
             },
           },
           {
@@ -320,7 +412,14 @@ describe('TS workspaces getAmendments utility', () => {
                 version: '1.0.0',
               },
             },
-            tsconfig: { compilerOptions: { composite: true } },
+            tsconfig: {
+              tsconfigJson: {
+                compilerOptions: {
+                  composite: true,
+                },
+              },
+              path: '/root-dir/packages/package2/tsconfig.json',
+            },
           },
         ],
       }).should.deepEqual([
