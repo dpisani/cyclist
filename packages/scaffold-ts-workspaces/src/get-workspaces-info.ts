@@ -44,15 +44,20 @@ export const getWorkspaceInfo = async (
 };
 
 export const getWorkspacesInfo = async (
-  cwd: string
+  cwd: string,
+  { checkExisting }: { checkExisting?: boolean }
 ): Promise<{
   rootWorkspace: WorkspaceConfigInfo;
   workspaces: WorkspaceConfigInfo[];
 }> => {
   const { packages, root } = await getPackages(cwd);
 
-  const workspaces = await Promise.all(packages.map(getWorkspaceInfo));
   const rootWorkspace = await getWorkspaceInfo(root);
+  let workspaces = await Promise.all(packages.map(getWorkspaceInfo));
+
+  if (checkExisting) {
+    workspaces = workspaces.filter(w => w.tsconfig);
+  }
 
   return { rootWorkspace, workspaces };
 };

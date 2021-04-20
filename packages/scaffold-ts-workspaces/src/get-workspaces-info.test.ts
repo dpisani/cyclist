@@ -27,7 +27,7 @@ describe('Get TS workspaces build info integration test', () => {
   before(async () => {
     testWorkspacesDir = await copyFixtureToTemp('ts-workspaces-project');
 
-    workspacesInfo = await getWorkspacesInfo(testWorkspacesDir);
+    workspacesInfo = await getWorkspacesInfo(testWorkspacesDir, {});
   });
 
   it('scans info about the workspace root', () => {
@@ -70,5 +70,17 @@ describe('Get TS workspaces build info integration test', () => {
       `${testWorkspacesDir}/workspace-2/tsconfig.json`
     );
     workspacesInfo.workspaces[1].tsconfig?.tsconfigJson.should.deepEqual({});
+  });
+
+  it('filters child workspaces that have tsconfigs when checkExisting is true', async () => {
+    const workspacesInfoExisting = await getWorkspacesInfo(testWorkspacesDir, {
+      checkExisting: true,
+    });
+
+    workspacesInfoExisting.workspaces.should.have.lengthOf(1);
+
+    workspacesInfoExisting.workspaces[0].definition.packageJson.name.should.equal(
+      'ts-workspaces-project-workspace-1'
+    );
   });
 });

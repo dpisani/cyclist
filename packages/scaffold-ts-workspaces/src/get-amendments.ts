@@ -91,7 +91,7 @@ export const getAmendments = ({
           filePath: workspace.tsconfig.path,
           jsonPath: ['compilerOptions'],
           desiredValue: { composite: true },
-          description: 'compilerOptions must be a valid object.',
+          description: 'compilerOptions must be an object.',
         });
       } else {
         // All child tsconfigs should have composite mode on
