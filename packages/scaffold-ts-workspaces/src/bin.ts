@@ -4,6 +4,8 @@ import yargs = require('yargs');
 import { getWorkspacesInfo } from './get-workspaces-info';
 import { getAmendments } from './get-amendments';
 import * as path from 'path';
+import { applyAmendments } from './apply-amendments';
+import { writeJsonFile } from './write-json-file';
 
 const argv = yargs(process.argv.slice(2)).options({
   validate: {
@@ -39,24 +41,32 @@ const main = async (): Promise<void> => {
       console.log('The following problems were found:');
 
       for (const amendment of requiredAmendments) {
-        console.log();
-        console.log(`${amendment.filePath}:`);
+        console.log('\n', `${amendment.filePath}:`);
         console.log(`${amendment.description}`);
         if (argv.verbose) {
-          console.log(
-            'Expected value: ',
-            JSON.stringify(amendment.desiredValue)
-          );
+          console.log('Required patch: ', JSON.stringify(amendment.patch));
         }
       }
 
+      console.log(
+        `Run ${argv.$0} without --validate to automatically fix these problems.`
+      );
       process.exit(1);
     } else {
       console.log('Workspaces build config is valid!');
       process.exit(0);
     }
   } else {
-    console.error('FIX NOT IMPLEMENTED YET');
+    const fixedFiles = applyAmendments(
+      workspacesInfo.allJsonConfigFiles,
+      requiredAmendments
+    );
+
+    await Promise.all(
+      Array.from(fixedFiles.entries()).map(([fPath, document]) =>
+        writeJsonFile(fPath, document)
+      )
+    );
   }
 };
 

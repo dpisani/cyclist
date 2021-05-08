@@ -10,14 +10,17 @@ export type JSONValue =
   | Array<JSONValue>
   | { [key: string]: JSONValue | undefined };
 
+export type JSONDocument = { [key: string]: JSONValue | undefined };
+
 export interface TSConfig {
   path: string;
-  tsconfigJson: { [key: string]: JSONValue | undefined };
+  tsconfigJson: JSONDocument;
 }
 
 export interface WorkspaceConfigInfo {
   definition: Package;
   tsconfig: TSConfig | null;
+  jsonFiles: Map<string, JSONDocument | null>;
 }
 
 export const getWorkspaceInfo = async (
@@ -40,6 +43,10 @@ export const getWorkspaceInfo = async (
           tsconfigJson,
         }
       : null,
+    jsonFiles: new Map([
+      [pkg.dir, pkg.packageJson],
+      [tsconfigPath, tsconfigJson],
+    ]),
   };
 };
 
@@ -49,6 +56,7 @@ export const getWorkspacesInfo = async (
 ): Promise<{
   rootWorkspace: WorkspaceConfigInfo;
   workspaces: WorkspaceConfigInfo[];
+  allJsonConfigFiles: Map<string, JSONDocument | null>;
 }> => {
   const { packages, root } = await getPackages(cwd);
 
@@ -59,5 +67,12 @@ export const getWorkspacesInfo = async (
     workspaces = workspaces.filter(w => w.tsconfig);
   }
 
-  return { rootWorkspace, workspaces };
+  return {
+    rootWorkspace,
+    workspaces,
+    allJsonConfigFiles: new Map([
+      ...rootWorkspace.jsonFiles,
+      ...workspaces.flatMap(w => [...w.jsonFiles]),
+    ]),
+  };
 };

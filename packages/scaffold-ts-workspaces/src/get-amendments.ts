@@ -1,14 +1,13 @@
+import { Operation as JsonPatchOperation } from 'fast-json-patch';
 import * as path from 'path';
-import { JSONValue, WorkspaceConfigInfo } from './get-workspaces-info';
-import { diffArrays } from './util/diff-arrays';
+import { WorkspaceConfigInfo } from './get-workspaces-info';
+import { diffArrays } from './diff-arrays';
 
-interface JsonFileAmendment {
+export interface JsonFileAmendment {
   // Absolute path to the file that should be modified
   filePath: string;
-  // The object path to the entry within the file that should be changed
-  jsonPath: Array<string>;
-  // The desired replacement value for the specified path
-  desiredValue: JSONValue;
+  // The desired change to be made to the file
+  patch: JsonPatchOperation;
   // A human readable description of the change that should be made
   description: string;
 }
@@ -17,8 +16,8 @@ export const getAmendments = ({
   rootWorkspace: rootPackage,
   workspaces: packages,
 }: {
-  rootWorkspace: WorkspaceConfigInfo;
-  workspaces: WorkspaceConfigInfo[];
+  rootWorkspace: Pick<WorkspaceConfigInfo, 'definition' | 'tsconfig'>;
+  workspaces: Pick<WorkspaceConfigInfo, 'definition' | 'tsconfig'>[];
 }): JsonFileAmendment[] => {
   const amendments: JsonFileAmendment[] = [];
   // Look for root package amendments
@@ -42,8 +41,14 @@ export const getAmendments = ({
     if (hasIncorrectRootReferences) {
       amendments.push({
         filePath: rootPackage.tsconfig.path,
-        jsonPath: ['references'],
-        desiredValue: desiredRootReferences,
+        patch: {
+          path: '/references',
+          op:
+            rootPackage.tsconfig.tsconfigJson.references === undefined
+              ? 'add'
+              : 'replace',
+          value: desiredRootReferences,
+        },
         description:
           'Your root tsconfig should list references to all your workspaces.',
       });
@@ -51,9 +56,12 @@ export const getAmendments = ({
   } else {
     amendments.push({
       filePath: path.join(rootPackage.definition.dir, 'tsconfig.json'),
-      jsonPath: [],
-      desiredValue: {
-        references: desiredRootReferences,
+      patch: {
+        path: '/',
+        op: 'add',
+        value: {
+          references: desiredRootReferences,
+        },
       },
       description:
         'You should have a root tsconfig to build the entire project.',
@@ -89,8 +97,14 @@ export const getAmendments = ({
       ) {
         amendments.push({
           filePath: workspace.tsconfig.path,
-          jsonPath: ['compilerOptions'],
-          desiredValue: { composite: true },
+          patch: {
+            path: '/compilerOptions',
+            op:
+              workspace.tsconfig.tsconfigJson.compilerOptions === undefined
+                ? 'add'
+                : 'replace',
+            value: { composite: true },
+          },
           description: 'compilerOptions must be an object.',
         });
       } else {
@@ -101,8 +115,15 @@ export const getAmendments = ({
         ) {
           amendments.push({
             filePath: workspace.tsconfig.path,
-            jsonPath: ['compilerOptions', 'composite'],
-            desiredValue: true,
+            patch: {
+              path: '/compilerOptions/composite',
+              op:
+                workspace.tsconfig.tsconfigJson.compilerOptions?.composite ===
+                undefined
+                  ? 'add'
+                  : 'replace',
+              value: true,
+            },
             description:
               'Workspace tsconfig files must have the composite setting enabled.',
           });
@@ -122,8 +143,14 @@ export const getAmendments = ({
         if (hasIncorrectReferences) {
           amendments.push({
             filePath: workspace.tsconfig.path,
-            jsonPath: ['references'],
-            desiredValue: desiredReferences,
+            patch: {
+              path: '/references',
+              op:
+                workspace.tsconfig.tsconfigJson.references === undefined
+                  ? 'add'
+                  : 'replace',
+              value: desiredReferences,
+            },
             description:
               'Your workspace tsconfig should list references to all the other workspaces it depends on.',
           });
@@ -132,11 +159,14 @@ export const getAmendments = ({
     } else {
       amendments.push({
         filePath: path.join(workspace.definition.dir, 'tsconfig.json'),
-        jsonPath: [],
-        desiredValue: {
-          references: desiredReferences,
-          compilerOptions: {
-            composite: true,
+        patch: {
+          path: '/',
+          op: 'add',
+          value: {
+            references: desiredReferences,
+            compilerOptions: {
+              composite: true,
+            },
           },
         },
         description: 'You should have a tsconfig in each workspace.',

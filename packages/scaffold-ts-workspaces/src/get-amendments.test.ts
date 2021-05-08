@@ -94,15 +94,18 @@ describe('TS workspaces getAmendments utility', () => {
       }).should.deepEqual([
         {
           filePath: '/root-dir/tsconfig.json',
-          jsonPath: ['references'],
-          desiredValue: [
-            {
-              path: 'packages/package1',
-            },
-            {
-              path: 'packages/package2',
-            },
-          ],
+          patch: {
+            path: '/references',
+            op: 'replace',
+            value: [
+              {
+                path: 'packages/package1',
+              },
+              {
+                path: 'packages/package2',
+              },
+            ],
+          },
           description:
             'Your root tsconfig should list references to all your workspaces.',
         },
@@ -131,8 +134,11 @@ describe('TS workspaces getAmendments utility', () => {
       }).should.deepEqual([
         {
           filePath: '/root-dir/tsconfig.json',
-          jsonPath: ['references'],
-          desiredValue: [],
+          patch: {
+            path: '/references',
+            op: 'replace',
+            value: [],
+          },
           description:
             'Your root tsconfig should list references to all your workspaces.',
         },
@@ -166,9 +172,12 @@ describe('TS workspaces getAmendments utility', () => {
     }).should.deepEqual([
       {
         filePath: '/root-dir/tsconfig.json',
-        jsonPath: [],
-        desiredValue: {
-          references: [{ path: 'packages/package1' }],
+        patch: {
+          path: '/',
+          op: 'add',
+          value: {
+            references: [{ path: 'packages/package1' }],
+          },
         },
         description:
           'You should have a root tsconfig to build the entire project.',
@@ -210,8 +219,11 @@ describe('TS workspaces getAmendments utility', () => {
       }).should.deepEqual([
         {
           filePath: '/root-dir/packages/package1/tsconfig.json',
-          jsonPath: ['compilerOptions', 'composite'],
-          desiredValue: true,
+          patch: {
+            path: '/compilerOptions/composite',
+            op: 'add',
+            value: true,
+          },
           description:
             'Workspace tsconfig files must have the composite setting enabled.',
         },
@@ -279,12 +291,15 @@ describe('TS workspaces getAmendments utility', () => {
       }).should.deepEqual([
         {
           filePath: '/root-dir/packages/package1/tsconfig.json',
-          jsonPath: ['references'],
-          desiredValue: [
-            {
-              path: '../package2',
-            },
-          ],
+          patch: {
+            path: '/references',
+            op: 'add',
+            value: [
+              {
+                path: '../package2',
+              },
+            ],
+          },
           description:
             'Your workspace tsconfig should list references to all the other workspaces it depends on.',
         },
@@ -352,12 +367,15 @@ describe('TS workspaces getAmendments utility', () => {
       }).should.deepEqual([
         {
           filePath: '/root-dir/packages/package1/tsconfig.json',
-          jsonPath: ['references'],
-          desiredValue: [
-            {
-              path: '../package2',
-            },
-          ],
+          patch: {
+            path: '/references',
+            op: 'add',
+            value: [
+              {
+                path: '../package2',
+              },
+            ],
+          },
           description:
             'Your workspace tsconfig should list references to all the other workspaces it depends on.',
         },
@@ -425,12 +443,15 @@ describe('TS workspaces getAmendments utility', () => {
       }).should.deepEqual([
         {
           filePath: '/root-dir/packages/package1/tsconfig.json',
-          jsonPath: ['references'],
-          desiredValue: [
-            {
-              path: '../package2',
-            },
-          ],
+          patch: {
+            path: '/references',
+            op: 'add',
+            value: [
+              {
+                path: '../package2',
+              },
+            ],
+          },
           description:
             'Your workspace tsconfig should list references to all the other workspaces it depends on.',
         },

@@ -1,5 +1,12 @@
 {
-  "references": [{ "path": "packages/runner" }, { "path": "./packages/scaffold-ts-workspaces" }],
+  "references": [
+    {
+      "path": "packages/runner"
+    },
+    {
+      "path": "packages/scaffold-ts-workspaces"
+    }
+  ],
   "files": [],
   "include": []
 }

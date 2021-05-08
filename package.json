@@ -28,6 +28,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "engines" : { "node" : ">=12" },
   "cyclist": {
     "lifecycles": {
       "package": {
