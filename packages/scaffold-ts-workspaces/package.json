@@ -12,7 +12,9 @@
   "files": [
     "build"
   ],
-  "engines" : { "node" : ">=12" },
+  "engines": {
+    "node": ">=12"
+  },
   "scripts": {
     "start": "node ./build/src/bin.js"
   },
